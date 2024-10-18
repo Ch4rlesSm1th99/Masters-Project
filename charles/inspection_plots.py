@@ -10,7 +10,6 @@ sdarn_read = pydarn.SuperDARNRead(fitacf_stream, True)
 fitacf_data = sdarn_read.read_fitacf()
 
 def plot_parameter(data, parameter, title, ylabel, color='blue'):
-    # Check if the data contains the parameter
     if any(parameter in record for record in data):
         plt.figure(figsize=(10, 5))
         plt.title(title)
