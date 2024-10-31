@@ -89,3 +89,6 @@ target/
 # mypy
 .mypy_cache/
 
+# datasets
+data/
+
