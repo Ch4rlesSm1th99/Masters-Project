@@ -11,7 +11,6 @@ algorithms like DBSCAN or Gaussian Mixture Models (GMM) are used to detect or cl
 2. **Self-Supervised Approach**: Although this approach has not been applied to space plasma physics in the literature, it has 
 shown promise in related time series tasks. We plan to try self-supervised learning first and see how it performs.
 
-## Features
 The dataset contains around 2000 time series files with three key features that may indicate an auroral event: **power**, 
 **velocity**, and **spectral width**.
 
