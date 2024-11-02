@@ -18,7 +18,7 @@ The dataset contains around 2000 time series files with three key features that 
 # Self-Supervised Strategy
 
 
-## 1. Modality Treatment
+## 1. Data Input/Feature Treatment
 To give the model as much context as possible, we will treat the three features (power, velocity, spectral width) as 
 separate modalities. This approach will give us more flexibility in how we combine these different types of data.
 
@@ -40,11 +40,10 @@ since the dataset is very specific to this problem. Pretrained models or fine-tu
 uniqueness of the dataset.
 
 
-## 4. Modality Fusion
-
-After extracting features for each modality, we will concatenate them to form a combined feature space representing all 
-three types of data. We may also experiment with hierarchical fusion to see which features contribute most to the 
-detection.
+## 4. Feature Fusion
+After extracting features for each data type (modality), we will concatenate them to form a combined feature space 
+representing all three types of data which will be passed through the alignment network and classifier head. We may 
+also experiment with hierarchical fusion to see which features contribute most to the detection.
 
 ## 5. Self-Supervised Strategy
 We plan to use a contrastive loss function (e.g., SimCLR or Orchestra) or a triplet loss function to align similar pairs 
