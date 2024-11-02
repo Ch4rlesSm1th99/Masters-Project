@@ -4,19 +4,14 @@ import pydarn
 import matplotlib.pyplot as plt
 import datetime as dt
 
-
 data_directory = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\data\1995"
 
-
 files = [f for f in os.listdir(data_directory) if f.endswith('.bz2')]
-
 
 if len(files) == 0:
     print("No files found in the directory.")
 else:
-
     fitacf_file = os.path.join(data_directory, files[0])
-
 
     try:
         with bz2.open(fitacf_file, 'rb') as fp:
@@ -25,7 +20,6 @@ else:
         # parse files
         sdarn_read = pydarn.SuperDARNRead(fitacf_stream, True)
         fitacf_data = sdarn_read.read_fitacf()
-
 
         if fitacf_data:
             print(f"Data from file: {files[0]}")
@@ -40,6 +34,16 @@ else:
         else:
             print("No data found in the file.")
 
+        # Inspect how the three key features (power, velocity, spectral width) are stored
+        print("\nInspecting the three key features (power, velocity, spectral width) in the first record:")
+        key_features = ['p_l', 'v', 'w_l']
+        if fitacf_data:
+            first_record = fitacf_data[0]
+            for feature in key_features:
+                if feature in first_record:
+                    print(f"{feature}: {first_record[feature]}")
+                else:
+                    print(f"{feature}: Not found in the record")
 
         plt.figure(figsize=(12, 16))
 
@@ -63,7 +67,8 @@ else:
                 end_time=end_time,
                 range_estimation=pydarn.RangeEstimation.SLANT_RANGE,
                 latlon='lat',
-                coords=pydarn.Coords.AACGM
+                coords=pydarn.Coords.AACGM,
+                plot_equatorward=False
             )
             plt.ylabel(ylabel)
             plt.title(f"Beam 10 - {parameter}")
