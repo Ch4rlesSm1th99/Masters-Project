@@ -90,5 +90,5 @@ target/
 .mypy_cache/
 
 # datasets
-data/
+charles/data/
 

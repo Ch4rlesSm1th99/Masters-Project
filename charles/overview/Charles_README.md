@@ -19,8 +19,9 @@ The dataset contains around 2000 time series files with three key features that 
 
 
 ## 1. Data Input/Feature Treatment
-To give the model as much context as possible, we will treat the three features (power, velocity, spectral width) as 
-separate modalities. This approach will give us more flexibility in how we combine these different types of data.
+To give the model as much context as possible, we will train on all three feature types where we will pass each feature  
+(power, velocity, spectral width) as a separate channel to the feature extractor similar to channels for RGB images. 
+This approach will give us more flexibility in how we combine these different types of data.
 
 We will split the time series into smaller segments before feeding them into the model. The length of these segments 
 needs to be longer than the typical duration of an auroral event. We may need to fine-tune the segment length to help 
@@ -28,7 +29,7 @@ the model learn effectively.
 
 ## 2. Data Augmentation
 We will create augmented versions of the data by adding noise or shifting the data slightly. The goal is to generate 
-alternate views of the same data while preserving global patterns. We will visualise the original data and its 
+alternate views of the same data while preserving the unknown label for the data. We will visualise the original data and its 
 augmentations to ensure consistency and avoid training on bad data.
 
 Data augmentation will be applied in the dataloader (ideally an argument of the dataloader), rather than creating a 
