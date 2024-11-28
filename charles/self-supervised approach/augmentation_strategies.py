@@ -221,8 +221,11 @@ def main():
         plot_augmented_data_grid(plot_data_list, negative_value)
 
 
-def plot_augmented_data_grid(plot_data_list, negative_value):
-    """Plot original and augmented data for multiple segments in a 3x3 grid."""
+import numpy as np
+import matplotlib.pyplot as plt
+
+def plot_augmented_data_grid(plot_data_list, negative_value=-9999):
+    """Plot original and augmented data for multiple segments in a grid."""
     num_segments = len(plot_data_list)
     fig, axs = plt.subplots(num_segments, 3, figsize=(15, 5 * num_segments))
 
@@ -241,7 +244,7 @@ def plot_augmented_data_grid(plot_data_list, negative_value):
         axs[i, 0].set_ylabel('Range Gates')
         fig.colorbar(im, ax=axs[i, 0], orientation='vertical', fraction=0.046, pad=0.04)
 
-        # display aug 1
+        # augmented data 1
         power_masked = np.ma.masked_where(augmented_data_1 == negative_value, augmented_data_1)
         im = axs[i, 1].imshow(power_masked.T, aspect='auto', origin='lower', cmap='viridis', vmin=vmin, vmax=vmax)
         axs[i, 1].set_title('Augmented 1')
@@ -249,7 +252,7 @@ def plot_augmented_data_grid(plot_data_list, negative_value):
         axs[i, 1].set_ylabel('Range Gates')
         fig.colorbar(im, ax=axs[i, 1], orientation='vertical', fraction=0.046, pad=0.04)
 
-        # display aug 2
+        # augmented data 2
         power_masked = np.ma.masked_where(augmented_data_2 == negative_value, augmented_data_2)
         im = axs[i, 2].imshow(power_masked.T, aspect='auto', origin='lower', cmap='viridis', vmin=vmin, vmax=vmax)
         axs[i, 2].set_title('Augmented 2')
@@ -259,6 +262,7 @@ def plot_augmented_data_grid(plot_data_list, negative_value):
 
     plt.tight_layout()
     plt.show()
+
 
 
 if __name__ == "__main__":
