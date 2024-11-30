@@ -12,7 +12,7 @@ import random
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # user options
-debugging_mode = True  # true for debugging data directory
+debugging_mode = False  # true for debugging data directory
 plotting_enabled = True  # enable or disable plotting
 extract_data = True  # extract data into segments or just plot
 logging_enabled = True  # enable or disable logging to a file
@@ -27,12 +27,10 @@ else:
 
 save_directory = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data"
 
-# path to the preprocessed HDF5 file
 h5_file_path_preprocessed = os.path.join(save_directory, 'beam_0_selected_data.h5')
 
 def load_and_preprocess_data(data_directory, beam_number, negative_value, extract_data):
     if extract_data:
-        # records to store data from files
         all_records = []
 
         files = [f for f in os.listdir(data_directory) if f.endswith('.bz2')]
@@ -236,7 +234,6 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                     grp = hf_full.create_group(group_name)
                     grp.create_dataset('data', data=data)
 
-                    # convert numpy.datetime64 to datetime before calling isoformat()
                     start_time_dt = pd.to_datetime(time).to_pydatetime()
                     end_time_dt = pd.to_datetime(time + pd.Timedelta('1H')).to_pydatetime()
 
@@ -244,7 +241,6 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                     grp.attrs['end_time'] = end_time_dt.isoformat()
 
                 # split segments into train, val, and test sets
-                # shuffle the indices
                 total_segments = len(segments)
                 indices = list(range(total_segments))
                 random.shuffle(indices)

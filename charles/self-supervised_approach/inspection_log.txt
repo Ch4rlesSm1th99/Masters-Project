@@ -1,5 +1,3 @@
-Number of segments: 3749
-
 Segment: segment_0
 Start Time: 1995-06-19T00:00:04
 End Time: 1995-06-19T01:00:04
@@ -33740,6 +33738,7 @@ Number of time intervals: 30
 Power - min: -8.130000114440918, max: 50.290000915527344, mean: 8.62496280670166
 Velocity - min: -618.5999755859375, max: 1808.5, mean: -0.7011610865592957
 Spectral Width - min: -140.60000610351562, max: 1282.9000244140625, mean: 29.468647003173828
+
 
 Overall statistics:
 Total number of segments: 3749

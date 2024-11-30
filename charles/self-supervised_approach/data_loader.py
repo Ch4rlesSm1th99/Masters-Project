@@ -51,10 +51,10 @@ class SuperDARNDataset(Dataset):
             valid_mask_1 = augmented_power_data_1 != self.negative_value
             valid_mask_2 = augmented_power_data_2 != self.negative_value
 
-            print(
+            '''print(
                 f"Before normalisation: Aug1 min={augmented_power_data_1[valid_mask_1].min()}, max={augmented_power_data_1[valid_mask_1].max()}")
             print(
-                f"Before normalisation: Aug2 min={augmented_power_data_2[valid_mask_2].min()}, max={augmented_power_data_2[valid_mask_2].max()}")
+                f"Before normalisation: Aug2 min={augmented_power_data_2[valid_mask_2].min()}, max={augmented_power_data_2[valid_mask_2].max()}")'''
 
             augmented_power_data_1_unscaled = augmented_power_data_1.copy()     # copies for plotting and comparison
             augmented_power_data_2_unscaled = augmented_power_data_2.copy()
@@ -72,8 +72,8 @@ class SuperDARNDataset(Dataset):
             std_aug1 = np.std(augmented_power_data_1[valid_mask_1])
             mean_aug2 = np.mean(augmented_power_data_2[valid_mask_2])
             std_aug2 = np.std(augmented_power_data_2[valid_mask_2])
-            print(f"After normalisation: Aug1 mean={mean_aug1:.4f}, std={std_aug1:.4f}")
-            print(f"After normalisation: Aug2 mean={mean_aug2:.4f}, std={std_aug2:.4f}")
+            '''print(f"After normalisation: Aug1 mean={mean_aug1:.4f}, std={std_aug1:.4f}")
+            print(f"After normalisation: Aug2 mean={mean_aug2:.4f}, std={std_aug2:.4f}")'''
 
             augmented_power_data_1_tensor = torch.from_numpy(augmented_power_data_1).float()
             augmented_power_data_2_tensor = torch.from_numpy(augmented_power_data_2).float()
@@ -91,7 +91,7 @@ class SuperDARNDataset(Dataset):
 
             mean_power = np.mean(power_data[valid_mask])
             std_power = np.std(power_data[valid_mask])
-            print(f"After normalisation: mean={mean_power:.4f}, std={std_power:.4f}")
+            '''print(f"After normalisation: mean={mean_power:.4f}, std={std_power:.4f}")'''
 
             power_data_tensor = torch.from_numpy(power_data).float()
             return power_data_tensor, None, power_data_unscaled, None, segment_name
