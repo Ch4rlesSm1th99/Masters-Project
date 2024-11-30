@@ -12,9 +12,9 @@ import random
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # user options
-debugging_mode = False  # true for debugging data directory
+debugging_mode = True  # true for debugging data directory
 plotting_enabled = True  # enable or disable plotting
-extract_data = False  # extract data into segments or just plot
+extract_data = True  # extract data into segments or just plot
 logging_enabled = True  # enable or disable logging to a file
 beam_number = 0  # beam number to process
 negative_value = -9999  # negative padding value used in data
@@ -28,7 +28,7 @@ else:
 save_directory = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data"
 
 # path to the preprocessed HDF5 file
-h5_file_path_preprocessed = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\beam_0_selected_data.h5"
+h5_file_path_preprocessed = os.path.join(save_directory, 'beam_0_selected_data.h5')
 
 def load_and_preprocess_data(data_directory, beam_number, negative_value, extract_data):
     if extract_data:
@@ -74,7 +74,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                                 record['time.hr'],
                                 record['time.mt'],
                                 record['time.sc'],
-                                int(record['time.us'] / 1000)  # microseconds to milliseconds
+                                int(record['time.us'] / 1000)  # microseconds --> milliseconds
                             )
                         except ValueError as e:
                             print(f"Invalid date in record: {e}. Skipping.")
@@ -91,7 +91,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                             'stid': record['stid'],
                         }
 
-                        # for each range gate in slist, extract the features
+                        # for each range gate in slist, extract features
                         slist = record['slist']
                         for idx, gate in enumerate(slist):
                             gate_data = common_data.copy()
@@ -138,7 +138,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
         print(f"Number of unique times: {df.index.get_level_values('time').nunique()}")
         print(f"Number of unique range gates: {df.index.get_level_values('range_gate').nunique()}")
 
-        # handle missing data (fill NaNs with a negative value)
+        # handle missing data --> fill NaNs with negative_value
         df['p_l'] = df['p_l'].fillna(negative_value)
         df['v'] = df['v'].fillna(negative_value)
         df['w_l'] = df['w_l'].fillna(negative_value)
@@ -152,7 +152,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
         print(f"Number of valid velocity measurements: {num_valid_velocity}")
         print(f"Number of valid spectral width measurements: {num_valid_spectral_width}")
 
-        # get unique times and range gates from the data
+        # get unique times and range gates
         times = df.index.get_level_values('time').unique()
         range_gates = np.arange(df.index.get_level_values('range_gate').min(),
                                 df.index.get_level_values('range_gate').max() + 1)
@@ -178,7 +178,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
 
             while current_time < end_time:
                 next_time = current_time + delta
-                # find indices corresponding to the segment
+                # find indices for the segment
                 mask = (timestamps >= current_time) & (timestamps < next_time)
                 segment_times_in_window = timestamps[mask]
 
@@ -191,9 +191,9 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                     valid_points = np.sum(segment_power != negative_value)
                     if valid_points >= min_valid_points:
                         print(f"Processing segment starting at {current_time} with {valid_points} valid points.")
-                        # create 30 evenly spaced desired timestamps within the segment
+                        # create evenly spaced desired timestamps
                         desired_times = pd.date_range(start=current_time, end=next_time - pd.Timedelta('1ns'), periods=num_time_steps)
-                        # for each desired timestamp, find closest actual timestamp in segment
+                        # for each desired timestamp, find closest actual timestamp
                         actual_times = segment_times_in_window
                         selected_indices = []
                         for desired_time in desired_times:
@@ -205,7 +205,7 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
                         selected_power = segment_power[selected_indices]
                         selected_velocity = segment_velocity[selected_indices]
                         selected_spectral_width = segment_spectral_width[selected_indices]
-                        # stack
+                        # stack data
                         combined_data = np.stack([selected_power, selected_velocity, selected_spectral_width], axis=-1)
                         segments.append(combined_data)
                         segment_times.append(current_time)
@@ -228,20 +228,71 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
 
         output_file = os.path.join(save_directory, f'beam_{beam_number}_selected_data.h5')
 
-        with h5py.File(output_file, 'w') as hf:
-            for idx, (data, time) in enumerate(zip(segments, segment_times)):
-                group_name = f'segment_{idx}'
-                grp = hf.create_group(group_name)
-                grp.create_dataset('data', data=data)
+        with h5py.File(output_file, 'w') as hf_full:
+            if segments:
+                # save all segments into beam_0_selected_data.h5
+                for idx, (data, time) in enumerate(zip(segments, segment_times)):
+                    group_name = f'segment_{idx}'
+                    grp = hf_full.create_group(group_name)
+                    grp.create_dataset('data', data=data)
 
-                # convert numpy.datetime64 to datetime before calling isoformat()
-                start_time_dt = pd.to_datetime(time).to_pydatetime()
-                end_time_dt = pd.to_datetime(time + pd.Timedelta('1H')).to_pydatetime()
+                    # convert numpy.datetime64 to datetime before calling isoformat()
+                    start_time_dt = pd.to_datetime(time).to_pydatetime()
+                    end_time_dt = pd.to_datetime(time + pd.Timedelta('1H')).to_pydatetime()
 
-                grp.attrs['start_time'] = start_time_dt.isoformat()
-                grp.attrs['end_time'] = end_time_dt.isoformat()
+                    grp.attrs['start_time'] = start_time_dt.isoformat()
+                    grp.attrs['end_time'] = end_time_dt.isoformat()
 
-        print(f"\nPreprocessed data saved to {output_file}")
+                # split segments into train, val, and test sets
+                # shuffle the indices
+                total_segments = len(segments)
+                indices = list(range(total_segments))
+                random.shuffle(indices)
+
+                # split ratios
+                train_ratio = 0.7
+                val_ratio = 0.15
+                test_ratio = 0.15
+
+                train_end = int(train_ratio * total_segments)
+                val_end = train_end + int(val_ratio * total_segments)
+
+                train_indices = indices[:train_end]
+                val_indices = indices[train_end:val_end]
+                test_indices = indices[val_end:]
+
+                print(f"\nTotal segments: {total_segments}")
+                print(f"Training segments: {len(train_indices)}")
+                print(f"Validation segments: {len(val_indices)}")
+                print(f"Test segments: {len(test_indices)}")
+
+                # save train, val, and test datasets
+                def save_split(indices_list, split_name):
+                    split_file = os.path.join(save_directory, f'{split_name}.h5')
+                    with h5py.File(split_file, 'w') as hf_split:
+                        for idx_in_list, idx in enumerate(indices_list):
+                            data = segments[idx]
+                            time = segment_times[idx]
+                            group_name = f'segment_{idx_in_list}'
+                            grp = hf_split.create_group(group_name)
+                            grp.create_dataset('data', data=data)
+
+                            start_time_dt = pd.to_datetime(time).to_pydatetime()
+                            end_time_dt = pd.to_datetime(time + pd.Timedelta('1H')).to_pydatetime()
+
+                            grp.attrs['start_time'] = start_time_dt.isoformat()
+                            grp.attrs['end_time'] = end_time_dt.isoformat()
+                    print(f"{split_name.capitalize()} set saved to {split_file}")
+
+                save_split(train_indices, 'train')
+                save_split(val_indices, 'val')
+                save_split(test_indices, 'test')
+
+                print(f"\nPreprocessed data with train-val-test split saved to {output_file}")
+            else:
+                print("No segments were created from the data.")
+                return None
+
         h5_file_path = output_file
     else:
         # if not extracting data, use the predefined HDF5 file path
@@ -261,97 +312,204 @@ def load_and_preprocess_data(data_directory, beam_number, negative_value, extrac
     return h5_file_path
 
 def inspect_data(h5_file_path, negative_value, logging_enabled, plotting_enabled):
+    import h5py
+    import numpy as np
+    import matplotlib.pyplot as plt
+    import random
+    import os
+
     if h5_file_path is None or not os.path.exists(h5_file_path):
         print("No HDF5 file path provided for inspection or file does not exist.")
         return
 
+    total_segments = 0
+    time_intervals_list = []
+
+    if logging_enabled:
+        log_file_path = 'inspection_log.txt'
+        log_file = open(log_file_path, 'w')
+    else:
+        log_file = None
+
     with h5py.File(h5_file_path, 'r') as hf:
-        segments = list(hf.keys())
-        segments.sort(key=lambda x: int(x.split('_')[1]))
-        num_segments = len(segments)
-        print(f"Number of segments: {num_segments}\n")
+        root_items = list(hf.items())
+        if not root_items:
+            print("No data found in the HDF5 file.")
+            return
 
-        time_intervals_list = []
+        # determine if segments are in root or within groups
+        first_item_name, first_item = root_items[0]
+        if isinstance(first_item, h5py.Group):
+            if 'data' in first_item.keys():
+                print("Segments are stored directly under the root group.")
+                segments = [name for name, obj in hf.items() if isinstance(obj, h5py.Group)]
+                segments.sort(key=lambda x: int(x.split('_')[1]) if '_' in x else 0)
+                num_segments = len(segments)
+                total_segments = num_segments
+                print(f"\nNumber of segments: {num_segments}")
 
-        if logging_enabled:
-            log_file_path = 'inspection_log.txt'
-            log_file = open(log_file_path, 'w')
-            log_file.write(f"Number of segments: {num_segments}\n\n")
+                for segment_name in segments:
+                    grp = hf[segment_name]
+                    data = grp['data'][:]
+                    start_time = grp.attrs['start_time']
+                    end_time = grp.attrs['end_time']
+
+                    num_time_intervals = data.shape[0]
+                    time_intervals_list.append(num_time_intervals)
+
+                    print(f"Segment: {segment_name}")
+                    print(f"Start Time: {start_time}")
+                    print(f"End Time: {end_time}")
+                    print(f"Data shape: {data.shape}")
+                    print(f"Number of time intervals: {num_time_intervals}")
+
+                    if logging_enabled:
+                        log_file.write(f"Segment: {segment_name}\n")
+                        log_file.write(f"Start Time: {start_time}\n")
+                        log_file.write(f"End Time: {end_time}\n")
+                        log_file.write(f"Data shape: {data.shape}\n")
+                        log_file.write(f"Number of time intervals: {num_time_intervals}\n")
+
+
+                    power = data[:, :, 0]
+                    velocity = data[:, :, 1]
+                    spectral_width = data[:, :, 2]
+
+                    valid_mask = power != negative_value
+
+                    if np.any(valid_mask):
+                        power_valid = power[valid_mask]
+                        power_min = np.min(power_valid)
+                        power_max = np.max(power_valid)
+                        power_mean = np.mean(power_valid)
+                    else:
+                        power_min = power_max = power_mean = np.nan
+
+                    valid_mask_v = velocity != negative_value
+                    if np.any(valid_mask_v):
+                        velocity_valid = velocity[valid_mask_v]
+                        velocity_min = np.min(velocity_valid)
+                        velocity_max = np.max(velocity_valid)
+                        velocity_mean = np.mean(velocity_valid)
+                    else:
+                        velocity_min = velocity_max = velocity_mean = np.nan
+
+                    valid_mask_w = spectral_width != negative_value
+                    if np.any(valid_mask_w):
+                        spectral_width_valid = spectral_width[valid_mask_w]
+                        spectral_width_min = np.min(spectral_width_valid)
+                        spectral_width_max = np.max(spectral_width_valid)
+                        spectral_width_mean = np.mean(spectral_width_valid)
+                    else:
+                        spectral_width_min = spectral_width_max = spectral_width_mean = np.nan
+
+                    print(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}")
+                    print(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}")
+                    print(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n")
+
+                    if logging_enabled:
+                        log_file.write(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}\n")
+                        log_file.write(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}\n")
+                        log_file.write(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n\n")
+
+            else:
+                print("Segments are stored within groups (e.g., 'train', 'val', 'test').")
+                groups = [name for name, obj in hf.items() if isinstance(obj, h5py.Group)]
+                if not groups:
+                    print("No groups found in the HDF5 file.")
+                    return
+
+                for group_name in groups:
+                    group = hf[group_name]
+                    segments = [name for name in group.keys()]
+                    if not segments:
+                        print(f"No segments found in group: {group_name}")
+                        continue
+
+                    segments.sort(key=lambda x: int(x.split('_')[1]) if '_' in x else 0)
+                    num_segments = len(segments)
+                    total_segments += num_segments
+                    print(f"\nGroup: {group_name}")
+                    print(f"Number of segments: {num_segments}")
+
+                    if logging_enabled:
+                        log_file.write(f"\nGroup: {group_name}\n")
+                        log_file.write(f"Number of segments: {num_segments}\n")
+
+                    for segment_name in segments:
+                        grp = group[segment_name]
+                        data = grp['data'][:]
+                        start_time = grp.attrs['start_time']
+                        end_time = grp.attrs['end_time']
+
+                        num_time_intervals = data.shape[0]
+                        time_intervals_list.append(num_time_intervals)
+
+                        print(f"Segment: {segment_name}")
+                        print(f"Start Time: {start_time}")
+                        print(f"End Time: {end_time}")
+                        print(f"Data shape: {data.shape}")
+                        print(f"Number of time intervals: {num_time_intervals}")
+
+                        if logging_enabled:
+                            log_file.write(f"Segment: {segment_name}\n")
+                            log_file.write(f"Start Time: {start_time}\n")
+                            log_file.write(f"End Time: {end_time}\n")
+                            log_file.write(f"Data shape: {data.shape}\n")
+                            log_file.write(f"Number of time intervals: {num_time_intervals}\n")
+
+                        power = data[:, :, 0]
+                        velocity = data[:, :, 1]
+                        spectral_width = data[:, :, 2]
+
+                        valid_mask = power != negative_value
+
+                        # summaries no padding
+                        if np.any(valid_mask):
+                            power_valid = power[valid_mask]
+                            power_min = np.min(power_valid)
+                            power_max = np.max(power_valid)
+                            power_mean = np.mean(power_valid)
+                        else:
+                            power_min = power_max = power_mean = np.nan
+
+                        valid_mask_v = velocity != negative_value
+                        if np.any(valid_mask_v):
+                            velocity_valid = velocity[valid_mask_v]
+                            velocity_min = np.min(velocity_valid)
+                            velocity_max = np.max(velocity_valid)
+                            velocity_mean = np.mean(velocity_valid)
+                        else:
+                            velocity_min = velocity_max = velocity_mean = np.nan
+
+                        valid_mask_w = spectral_width != negative_value
+                        if np.any(valid_mask_w):
+                            spectral_width_valid = spectral_width[valid_mask_w]
+                            spectral_width_min = np.min(spectral_width_valid)
+                            spectral_width_max = np.max(spectral_width_valid)
+                            spectral_width_mean = np.mean(spectral_width_valid)
+                        else:
+                            spectral_width_min = spectral_width_max = spectral_width_mean = np.nan
+
+                        print(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}")
+                        print(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}")
+                        print(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n")
+
+                        if logging_enabled:
+                            log_file.write(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}\n")
+                            log_file.write(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}\n")
+                            log_file.write(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n\n")
+
         else:
-            log_file = None
+            print("Unexpected structure in HDF5 file.")
+            return
 
-        for segment_name in segments:
-            grp = hf[segment_name]
-            data = grp['data'][:]
-            start_time = grp.attrs['start_time']
-            end_time = grp.attrs['end_time']
-
-            num_time_intervals = data.shape[0]
-            time_intervals_list.append(num_time_intervals)
-
-            print(f"Segment: {segment_name}")
-            print(f"Start Time: {start_time}")
-            print(f"End Time: {end_time}")
-            print(f"Data shape: {data.shape}")  # shape = (time_steps, range_gates, features)
-            print(f"Number of time intervals: {num_time_intervals}")
-
-            # log segment details
-            if logging_enabled:
-                log_file.write(f"Segment: {segment_name}\n")
-                log_file.write(f"Start Time: {start_time}\n")
-                log_file.write(f"End Time: {end_time}\n")
-                log_file.write(f"Data shape: {data.shape}\n")
-                log_file.write(f"Number of time intervals: {num_time_intervals}\n")
-
-            # isolate features
-            power = data[:, :, 0]
-            velocity = data[:, :, 1]
-            spectral_width = data[:, :, 2]
-
-            # mask for padded data
-            valid_mask = power != negative_value
-
-            # summaries without the padding
-            if np.any(valid_mask):
-                power_valid = power[valid_mask]
-                power_min = np.min(power_valid)
-                power_max = np.max(power_valid)
-                power_mean = np.mean(power_valid)
-            else:
-                power_min = power_max = power_mean = np.nan
-
-            valid_mask_v = velocity != negative_value
-            if np.any(valid_mask_v):
-                velocity_valid = velocity[valid_mask_v]
-                velocity_min = np.min(velocity_valid)
-                velocity_max = np.max(velocity_valid)
-                velocity_mean = np.mean(velocity_valid)
-            else:
-                velocity_min = velocity_max = velocity_mean = np.nan
-
-            valid_mask_w = spectral_width != negative_value
-            if np.any(valid_mask_w):
-                spectral_width_valid = spectral_width[valid_mask_w]
-                spectral_width_min = np.min(spectral_width_valid)
-                spectral_width_max = np.max(spectral_width_valid)
-                spectral_width_mean = np.mean(spectral_width_valid)
-            else:
-                spectral_width_min = spectral_width_max = spectral_width_mean = np.nan
-
-            print(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}")
-            print(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}")
-            print(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n")
-
-            if logging_enabled:
-                log_file.write(f"Power - min: {power_min}, max: {power_max}, mean: {power_mean}\n")
-                log_file.write(f"Velocity - min: {velocity_min}, max: {velocity_max}, mean: {velocity_mean}\n")
-                log_file.write(f"Spectral Width - min: {spectral_width_min}, max: {spectral_width_max}, mean: {spectral_width_mean}\n\n")
-
+    if time_intervals_list:
         total_time_intervals = sum(time_intervals_list)
 
         overall_stats = (
-            f"Overall statistics:\n"
-            f"Total number of segments: {num_segments}\n"
+            f"\nOverall statistics:\n"
+            f"Total number of segments: {total_segments}\n"
             f"Total number of time steps across all segments: {total_time_intervals}\n"
             f"Average number of time intervals per segment: {np.mean(time_intervals_list)}\n"
             f"Minimum number of time intervals in a segment: {np.min(time_intervals_list)}\n"
@@ -360,53 +518,65 @@ def inspect_data(h5_file_path, negative_value, logging_enabled, plotting_enabled
         print(overall_stats)
         if logging_enabled:
             log_file.write(overall_stats)
-
+    else:
+        print("No time intervals found in any segments.")
         if logging_enabled:
-            log_file.close()
+            log_file.write("No time intervals found in any segments.\n")
 
-        # select 9 random segments to plot
-        if plotting_enabled:
-            random_segments = random.sample(segments, min(9, len(segments)))
+    if logging_enabled:
+        log_file.close()
+
+    if plotting_enabled:
+        with h5py.File(h5_file_path, 'r') as hf:
+            all_segments = []
+            root_items = list(hf.items())
+            first_item_name, first_item = root_items[0]
+            if isinstance(first_item, h5py.Group):
+                if 'data' in first_item.keys():
+                    segments = [name for name, obj in hf.items() if isinstance(obj, h5py.Group)]
+                    for segment_name in segments:
+                        all_segments.append((None, segment_name))
+                else:
+                    groups = [name for name, obj in hf.items() if isinstance(obj, h5py.Group)]
+                    for group_name in groups:
+                        group = hf[group_name]
+                        segments = list(group.keys())
+                        for segment_name in segments:
+                            all_segments.append((group_name, segment_name))
+            else:
+                print("Unexpected structure in HDF5 file.")
+                return
+
+        if all_segments:
+            random_segments = random.sample(all_segments, min(9, len(all_segments)))
             print(f"Randomly selected segments for plotting: {random_segments}")
 
             fig, axs = plt.subplots(3, 3, figsize=(15, 15))
             axs = axs.flatten()
-            for idx, segment_name in enumerate(random_segments):
-                grp = hf[segment_name]
-                data = grp['data'][:]
-                power = data[:, :, 0]
-                # mask the negative padding values
-                power_masked = np.ma.masked_where(power == negative_value, power)
-                im = axs[idx].imshow(power_masked.T, aspect='auto', origin='lower', cmap='viridis')
-                axs[idx].set_title(f'{segment_name}')
-                axs[idx].set_xlabel('Time Steps')
-                axs[idx].set_ylabel('Range Gates')
-                fig.colorbar(im, ax=axs[idx], orientation='vertical', fraction=0.046, pad=0.04)
+            with h5py.File(h5_file_path, 'r') as hf:
+                for idx, (group_name, segment_name) in enumerate(random_segments):
+                    if group_name is None:
+                        grp = hf[segment_name]
+                        title = f'{segment_name}'
+                    else:
+                        grp = hf[group_name][segment_name]
+                        title = f'{group_name}/{segment_name}'
+
+                    data = grp['data'][:]
+                    power = data[:, :, 0]
+                    # mask padding values
+                    power_masked = np.ma.masked_where(power == negative_value, power)
+                    im = axs[idx].imshow(power_masked.T, aspect='auto', origin='lower', cmap='viridis')
+                    axs[idx].set_title(title)
+                    axs[idx].set_xlabel('Time Steps')
+                    axs[idx].set_ylabel('Range Gates')
+                    fig.colorbar(im, ax=axs[idx], orientation='vertical', fraction=0.046, pad=0.04)
 
             plt.tight_layout()
             plt.show()
+        else:
+            print("No segments available for plotting.")
 
-    def get_segment_metadata(h5_file_path, segment_name):
-        with h5py.File(h5_file_path, 'r') as hf:
-            if segment_name in hf:
-                grp = hf[segment_name]
-                start_time = grp.attrs['start_time']
-                end_time = grp.attrs['end_time']
-                data_shape = grp['data'].shape
-                metadata = {
-                    'segment_name': segment_name,
-                    'start_time': start_time,
-                    'end_time': end_time,
-                    'data_shape': data_shape
-                }
-                return metadata
-            else:
-                print(f"Segment {segment_name} not found in the file.")
-                return None
-
-    segment_metadata = get_segment_metadata(h5_file_path, 'segment_0')
-    print("Metadata for segment_0:")
-    print(segment_metadata)
 
 def main():
     h5_file_path = load_and_preprocess_data(data_directory, beam_number, negative_value, extract_data)
