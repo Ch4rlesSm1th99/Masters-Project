@@ -100,8 +100,6 @@ else:
         print(f"\nPower data for beam {beam_of_interest}:")
         print(power_pivot.head())
 
-        # similarly, you can create pivot tables for 'v' and 'w_l'
-
         # visualise the power over time for the selected beam
         plt.figure(figsize=(12, 6))
         plt.imshow(power_pivot.T, aspect='auto', extent=[
