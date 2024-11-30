@@ -91,62 +91,62 @@ class SuperDARNDataset(Dataset):
 
             mean_power = np.mean(power_data[valid_mask])
             std_power = np.std(power_data[valid_mask])
-            print(f"After normalization: mean={mean_power:.4f}, std={std_power:.4f}")
+            print(f"After normalisation: mean={mean_power:.4f}, std={std_power:.4f}")
 
             power_data_tensor = torch.from_numpy(power_data).float()
             return power_data_tensor, None, power_data_unscaled, None, segment_name
 
 
 def plot_augmented_pairs(plot_data_list, negative_value=-9999):
-    """Plot pairs of augmented data for multiple segments, comparing normalized and un-normalized data."""
+    """Plot pairs of augmented data for multiple segments, comparing normalised and un-normalised data."""
     num_segments = len(plot_data_list)
     fig, axs = plt.subplots(num_segments, 4, figsize=(20, 5 * num_segments))
 
     for i, data_dict in enumerate(plot_data_list):
         segment_name = data_dict['segment_name']
-        # Normalized data
+        # normalised data
         augmented_data_1_norm = data_dict['augmented_1_norm']
         augmented_data_2_norm = data_dict['augmented_2_norm']
-        # Un-normalized data
+        # un-normalised data
         augmented_data_1_unscaled = data_dict['augmented_1_unscaled']
         augmented_data_2_unscaled = data_dict['augmented_2_unscaled']
 
-        # Plot normalized Augmented 1
+        # plot aug 1 normalised
         power_masked_norm_1 = np.ma.masked_where(augmented_data_1_norm == negative_value, augmented_data_1_norm)
         vmin_norm = power_masked_norm_1.min()
         vmax_norm = power_masked_norm_1.max()
         im1 = axs[i, 0].imshow(power_masked_norm_1.T, aspect='auto', origin='lower', cmap='viridis',
                                vmin=vmin_norm, vmax=vmax_norm)
-        axs[i, 0].set_title(f'Augmented 1 Normalized - {segment_name}')
+        axs[i, 0].set_title(f'Augmented 1 Normalised - {segment_name}')
         axs[i, 0].set_xlabel('Time Steps')
         axs[i, 0].set_ylabel('Range Gates')
         fig.colorbar(im1, ax=axs[i, 0], orientation='vertical', fraction=0.046, pad=0.04)
 
-        # Plot normalized Augmented 2
+        # plot aug 2 normalised
         power_masked_norm_2 = np.ma.masked_where(augmented_data_2_norm == negative_value, augmented_data_2_norm)
         im2 = axs[i, 1].imshow(power_masked_norm_2.T, aspect='auto', origin='lower', cmap='viridis',
                                vmin=vmin_norm, vmax=vmax_norm)
-        axs[i, 1].set_title(f'Augmented 2 Normalized - {segment_name}')
+        axs[i, 1].set_title(f'Augmented 2 Normalised - {segment_name}')
         axs[i, 1].set_xlabel('Time Steps')
         axs[i, 1].set_ylabel('Range Gates')
         fig.colorbar(im2, ax=axs[i, 1], orientation='vertical', fraction=0.046, pad=0.04)
 
-        # Plot un-normalized Augmented 1
+        # plot aug 1 un normalised
         power_masked_unscaled_1 = np.ma.masked_where(augmented_data_1_unscaled == negative_value, augmented_data_1_unscaled)
         vmin_unscaled = power_masked_unscaled_1.min()
         vmax_unscaled = power_masked_unscaled_1.max()
         im3 = axs[i, 2].imshow(power_masked_unscaled_1.T, aspect='auto', origin='lower', cmap='viridis',
                                vmin=vmin_unscaled, vmax=vmax_unscaled)
-        axs[i, 2].set_title(f'Augmented 1 Un-normalized - {segment_name}')
+        axs[i, 2].set_title(f'Augmented 1 Un-normalised - {segment_name}')
         axs[i, 2].set_xlabel('Time Steps')
         axs[i, 2].set_ylabel('Range Gates')
         fig.colorbar(im3, ax=axs[i, 2], orientation='vertical', fraction=0.046, pad=0.04)
 
-        # Plot un-normalized Augmented 2
+        # plot aug 2 un normalised
         power_masked_unscaled_2 = np.ma.masked_where(augmented_data_2_unscaled == negative_value, augmented_data_2_unscaled)
         im4 = axs[i, 3].imshow(power_masked_unscaled_2.T, aspect='auto', origin='lower', cmap='viridis',
                                vmin=vmin_unscaled, vmax=vmax_unscaled)
-        axs[i, 3].set_title(f'Augmented 2 Un-normalized - {segment_name}')
+        axs[i, 3].set_title(f'Augmented 2 Un-normalised - {segment_name}')
         axs[i, 3].set_xlabel('Time Steps')
         axs[i, 3].set_ylabel('Range Gates')
         fig.colorbar(im4, ax=axs[i, 3], orientation='vertical', fraction=0.046, pad=0.04)
@@ -166,7 +166,7 @@ def contrastive_collate_fn(batch):
         batch_data: Tensor of shape [2 * batch_size, ...] if augmentations are applied,
                     or [batch_size, ...] if not.
         segment_names: List of segment names for both x_i and x_j, or just one list if no augmentations.
-        unnormalized_data: List of unnormalized data for plotting.
+        unnormalised_data: List of unnormalised data for plotting.
     """
     if batch[0][1] is not None:  # check for applied augmentations
         data_1 = [item[0] for item in batch]
