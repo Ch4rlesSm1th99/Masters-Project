@@ -1,0 +1,367 @@
+Segment: segment_0
+Start Time: 1995-06-19T00:00:04
+End Time: 1995-06-19T01:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.549999952316284, max: 50.939998626708984, mean: 13.31950855255127
+Velocity - min: -2890.5, max: 1664.0999755859375, mean: 46.999996185302734
+Spectral Width - min: -89.80000305175781, max: 753.0, mean: 42.19331741333008
+
+Segment: segment_1
+Start Time: 1995-06-19T01:00:04
+End Time: 1995-06-19T02:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.389999866485596, max: 37.41999816894531, mean: 11.771042823791504
+Velocity - min: -2848.39990234375, max: 1234.5, mean: 7.822239398956299
+Spectral Width - min: -175.10000610351562, max: 638.9000244140625, mean: 29.2128849029541
+
+Segment: segment_2
+Start Time: 1995-06-19T02:00:04
+End Time: 1995-06-19T03:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.4600000381469727, max: 45.880001068115234, mean: 13.649624824523926
+Velocity - min: -664.0, max: 1843.0, mean: 17.556533813476562
+Spectral Width - min: -53.5, max: 612.7999877929688, mean: 38.26636505126953
+
+Segment: segment_3
+Start Time: 1995-06-19T03:00:04
+End Time: 1995-06-19T04:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -1.75, max: 39.04999923706055, mean: 12.060871124267578
+Velocity - min: -632.5999755859375, max: 950.0, mean: 37.415069580078125
+Spectral Width - min: -55.20000076293945, max: 697.5999755859375, mean: 36.85666275024414
+
+Segment: segment_4
+Start Time: 1995-06-19T04:00:04
+End Time: 1995-06-19T05:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.840000152587891, max: 39.95000076293945, mean: 10.81581974029541
+Velocity - min: -2447.300048828125, max: 1442.300048828125, mean: 41.16413116455078
+Spectral Width - min: -115.5999984741211, max: 845.2999877929688, mean: 34.19204330444336
+
+Segment: segment_5
+Start Time: 1995-06-19T05:00:04
+End Time: 1995-06-19T06:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.440000057220459, max: 35.45000076293945, mean: 8.218955039978027
+Velocity - min: -775.9000244140625, max: 1678.699951171875, mean: 18.679243087768555
+Spectral Width - min: -80.19999694824219, max: 975.5999755859375, mean: 32.36775588989258
+
+Segment: segment_6
+Start Time: 1995-06-19T06:00:04
+End Time: 1995-06-19T07:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.960000038146973, max: 35.41999816894531, mean: 8.500208854675293
+Velocity - min: -256.29998779296875, max: 1172.300048828125, mean: 6.992101669311523
+Spectral Width - min: -86.5, max: 1506.699951171875, mean: 27.6774959564209
+
+Segment: segment_7
+Start Time: 1995-06-19T07:00:04
+End Time: 1995-06-19T08:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -7.150000095367432, max: 38.2599983215332, mean: 10.206399917602539
+Velocity - min: -89.5999984741211, max: 702.4000244140625, mean: 15.067826271057129
+Spectral Width - min: -31.0, max: 881.0, mean: 26.628171920776367
+
+Segment: segment_8
+Start Time: 1995-06-19T08:00:04
+End Time: 1995-06-19T09:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.369999885559082, max: 38.5099983215332, mean: 9.186511993408203
+Velocity - min: -2863.699951171875, max: 1151.199951171875, mean: -8.589357376098633
+Spectral Width - min: -274.29998779296875, max: 805.7999877929688, mean: 18.298105239868164
+
+Segment: segment_9
+Start Time: 1995-06-19T09:00:04
+End Time: 1995-06-19T10:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.760000228881836, max: 38.65999984741211, mean: 9.516312599182129
+Velocity - min: -686.5, max: 1140.0, mean: 46.65632629394531
+Spectral Width - min: -124.4000015258789, max: 959.7999877929688, mean: 46.324703216552734
+
+Segment: segment_10
+Start Time: 1995-06-19T10:00:04
+End Time: 1995-06-19T11:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.269999980926514, max: 33.119998931884766, mean: 7.142323017120361
+Velocity - min: -1660.0999755859375, max: 1172.300048828125, mean: -1.6487257480621338
+Spectral Width - min: -122.0, max: 814.5, mean: 23.222095489501953
+
+Segment: segment_11
+Start Time: 1995-06-19T11:00:04
+End Time: 1995-06-19T12:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.630000114440918, max: 33.20000076293945, mean: 6.548678398132324
+Velocity - min: -1978.0, max: 2236.699951171875, mean: -1.6095744371414185
+Spectral Width - min: -87.9000015258789, max: 1063.300048828125, mean: 30.015655517578125
+
+Segment: segment_12
+Start Time: 1995-06-19T12:00:04
+End Time: 1995-06-19T13:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.119999885559082, max: 25.450000762939453, mean: 6.746150970458984
+Velocity - min: -530.5999755859375, max: 457.8999938964844, mean: -22.818885803222656
+Spectral Width - min: -75.19999694824219, max: 907.5, mean: 42.88039779663086
+
+Segment: segment_13
+Start Time: 1995-06-19T13:00:04
+End Time: 1995-06-19T14:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.7100000381469727, max: 30.25, mean: 7.679012298583984
+Velocity - min: -1456.5999755859375, max: 2704.60009765625, mean: -46.04795455932617
+Spectral Width - min: -42.900001525878906, max: 961.2999877929688, mean: 71.39108276367188
+
+Segment: segment_14
+Start Time: 1995-06-19T14:00:04
+End Time: 1995-06-19T15:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -7.510000228881836, max: 23.989999771118164, mean: 5.277948379516602
+Velocity - min: -690.9000244140625, max: 2812.10009765625, mean: -26.494871139526367
+Spectral Width - min: -78.5999984741211, max: 1182.4000244140625, mean: 77.15567779541016
+
+Segment: segment_15
+Start Time: 1995-06-19T15:00:04
+End Time: 1995-06-19T16:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.769999980926514, max: 23.469999313354492, mean: 6.91648006439209
+Velocity - min: -845.0, max: 2594.10009765625, mean: -28.61480140686035
+Spectral Width - min: -51.5, max: 1983.0999755859375, mean: 98.7040023803711
+
+Segment: segment_16
+Start Time: 1995-06-19T16:00:04
+End Time: 1995-06-19T17:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.409999847412109, max: 21.049999237060547, mean: 4.533504962921143
+Velocity - min: -1123.5, max: 681.5999755859375, mean: -51.754642486572266
+Spectral Width - min: -73.0, max: 1196.4000244140625, mean: 66.9355697631836
+
+Segment: segment_17
+Start Time: 1995-06-19T17:00:04
+End Time: 1995-06-19T18:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.0, max: 19.459999084472656, mean: 4.948933124542236
+Velocity - min: -673.4000244140625, max: 2869.10009765625, mean: -42.23292922973633
+Spectral Width - min: -114.30000305175781, max: 1613.5, mean: 74.42774963378906
+
+Segment: segment_18
+Start Time: 1995-06-19T18:00:04
+End Time: 1995-06-19T19:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -7.059999942779541, max: 20.959999084472656, mean: 4.756595134735107
+Velocity - min: -526.0, max: 1667.5999755859375, mean: -18.39175796508789
+Spectral Width - min: -106.0, max: 1420.800048828125, mean: 87.14049530029297
+
+Segment: segment_19
+Start Time: 1995-06-19T19:00:04
+End Time: 1995-06-19T20:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.559999942779541, max: 43.7400016784668, mean: 5.213923931121826
+Velocity - min: -1961.300048828125, max: 1239.5, mean: -11.835694313049316
+Spectral Width - min: -61.5, max: 836.4000244140625, mean: 45.101768493652344
+
+Segment: segment_20
+Start Time: 1995-06-19T20:00:04
+End Time: 1995-06-19T21:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.440000057220459, max: 28.34000015258789, mean: 7.331218719482422
+Velocity - min: -670.4000244140625, max: 608.4000244140625, mean: -6.240180969238281
+Spectral Width - min: -122.0999984741211, max: 1178.5, mean: 39.083072662353516
+
+Segment: segment_21
+Start Time: 1995-06-19T21:00:04
+End Time: 1995-06-19T22:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.329999923706055, max: 35.77000045776367, mean: 6.691060543060303
+Velocity - min: -676.4000244140625, max: 698.9000244140625, mean: 7.00649356842041
+Spectral Width - min: -142.39999389648438, max: 1049.5999755859375, mean: 44.18333053588867
+
+Segment: segment_22
+Start Time: 1995-06-19T22:00:04
+End Time: 1995-06-19T23:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -2.75, max: 34.209999084472656, mean: 9.610804557800293
+Velocity - min: -639.5, max: 688.5, mean: 6.303793907165527
+Spectral Width - min: -87.69999694824219, max: 857.2999877929688, mean: 24.160547256469727
+
+Segment: segment_23
+Start Time: 1995-06-19T23:00:04
+End Time: 1995-06-20T00:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.28000020980835, max: 36.529998779296875, mean: 10.527743339538574
+Velocity - min: -471.6000061035156, max: 352.20001220703125, mean: -0.6158427000045776
+Spectral Width - min: -30.700000762939453, max: 625.5999755859375, mean: 18.299238204956055
+
+Segment: segment_24
+Start Time: 1995-06-20T00:00:04
+End Time: 1995-06-20T01:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.349999904632568, max: 35.619998931884766, mean: 11.263010025024414
+Velocity - min: -1185.800048828125, max: 471.3999938964844, mean: 0.8562417030334473
+Spectral Width - min: -26.700000762939453, max: 739.7000122070312, mean: 15.99264144897461
+
+Segment: segment_25
+Start Time: 1995-06-20T01:00:04
+End Time: 1995-06-20T02:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -2.369999885559082, max: 45.43000030517578, mean: 13.009324073791504
+Velocity - min: -59.70000076293945, max: 72.0999984741211, mean: 9.866708755493164
+Spectral Width - min: -67.0, max: 1008.7000122070312, mean: 13.591614723205566
+
+Segment: segment_26
+Start Time: 1995-06-20T02:00:04
+End Time: 1995-06-20T03:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -0.9900000095367432, max: 51.90999984741211, mean: 14.688995361328125
+Velocity - min: -1359.0, max: 666.2999877929688, mean: 3.5297188758850098
+Spectral Width - min: -76.9000015258789, max: 1038.5999755859375, mean: 11.79544734954834
+
+Segment: segment_27
+Start Time: 1995-06-20T03:00:04
+End Time: 1995-06-20T04:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.53000020980835, max: 52.20000076293945, mean: 14.692845344543457
+Velocity - min: -1152.5, max: 635.7999877929688, mean: -2.843541383743286
+Spectral Width - min: -29.200000762939453, max: 737.5, mean: 12.598258972167969
+
+Segment: segment_28
+Start Time: 1995-06-20T04:00:04
+End Time: 1995-06-20T05:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.5, max: 47.540000915527344, mean: 14.39681625366211
+Velocity - min: -1156.800048828125, max: 224.0, mean: -7.103916645050049
+Spectral Width - min: -33.099998474121094, max: 573.7000122070312, mean: 10.375326156616211
+
+Segment: segment_29
+Start Time: 1995-06-20T05:00:04
+End Time: 1995-06-20T06:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -0.6399999856948853, max: 50.34000015258789, mean: 17.84200668334961
+Velocity - min: -2787.699951171875, max: 737.5, mean: 0.35780081152915955
+Spectral Width - min: -26.100000381469727, max: 370.70001220703125, mean: 8.886957168579102
+
+Segment: segment_30
+Start Time: 1995-06-20T06:00:04
+End Time: 1995-06-20T07:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.0299999713897705, max: 54.45000076293945, mean: 15.662542343139648
+Velocity - min: -674.0999755859375, max: 908.7000122070312, mean: -1.875507116317749
+Spectral Width - min: -42.400001525878906, max: 116.5, mean: 6.142433166503906
+
+Segment: segment_31
+Start Time: 1995-06-20T07:00:04
+End Time: 1995-06-20T08:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -7.320000171661377, max: 40.189998626708984, mean: 12.697748184204102
+Velocity - min: -1137.0999755859375, max: 1366.300048828125, mean: 2.359159469604492
+Spectral Width - min: -55.5, max: 683.2999877929688, mean: 12.54638671875
+
+Segment: segment_32
+Start Time: 1995-06-20T08:00:04
+End Time: 1995-06-20T09:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.680000066757202, max: 35.5, mean: 9.519664764404297
+Velocity - min: -877.5, max: 697.5999755859375, mean: -38.59595489501953
+Spectral Width - min: -32.20000076293945, max: 981.4000244140625, mean: 34.77838134765625
+
+Segment: segment_33
+Start Time: 1995-06-20T09:00:04
+End Time: 1995-06-20T10:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -7.380000114440918, max: 41.97999954223633, mean: 9.074522018432617
+Velocity - min: -1298.0, max: 679.2000122070312, mean: 1.6047862768173218
+Spectral Width - min: -70.19999694824219, max: 879.0999755859375, mean: 26.83184814453125
+
+Segment: segment_34
+Start Time: 1995-06-20T10:00:04
+End Time: 1995-06-20T11:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.739999771118164, max: 36.36000061035156, mean: 10.547316551208496
+Velocity - min: -892.2000122070312, max: 560.5, mean: 1.5886051654815674
+Spectral Width - min: -40.599998474121094, max: 928.2999877929688, mean: 18.33253288269043
+
+Segment: segment_35
+Start Time: 1995-06-20T11:00:04
+End Time: 1995-06-20T12:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -3.8499999046325684, max: 33.119998931884766, mean: 8.181838035583496
+Velocity - min: -1855.4000244140625, max: 1491.4000244140625, mean: -12.356433868408203
+Spectral Width - min: -69.0, max: 866.5, mean: 41.724632263183594
+
+Segment: segment_36
+Start Time: 1995-06-20T12:00:04
+End Time: 1995-06-20T13:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -6.510000228881836, max: 43.189998626708984, mean: 7.941568851470947
+Velocity - min: -1964.5999755859375, max: 675.0999755859375, mean: -6.5849995613098145
+Spectral Width - min: -52.79999923706055, max: 931.7000122070312, mean: 27.72068977355957
+
+Segment: segment_37
+Start Time: 1995-06-20T13:00:04
+End Time: 1995-06-20T14:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.159999847412109, max: 33.560001373291016, mean: 8.164494514465332
+Velocity - min: -1198.5, max: 1201.800048828125, mean: 2.769338607788086
+Spectral Width - min: -98.4000015258789, max: 710.7999877929688, mean: 17.73676109313965
+
+Segment: segment_38
+Start Time: 1995-06-20T14:00:04
+End Time: 1995-06-20T15:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -4.369999885559082, max: 28.989999771118164, mean: 7.498836517333984
+Velocity - min: -1181.800048828125, max: 742.7000122070312, mean: -4.539821624755859
+Spectral Width - min: -35.70000076293945, max: 1122.4000244140625, mean: 41.87516784667969
+
+Segment: segment_39
+Start Time: 1995-06-20T15:00:04
+End Time: 1995-06-20T16:00:04
+Data shape: (30, 75, 3)
+Number of time intervals: 30
+Power - min: -5.769999980926514, max: 25.75, mean: 6.217685699462891
+Velocity - min: -900.7000122070312, max: 1932.4000244140625, mean: -12.871379852294922
+Spectral Width - min: -102.0999984741211, max: 1153.800048828125, mean: 34.18939208984375
+
+
+Overall statistics:
+Total number of segments: 40
+Total number of time steps across all segments: 1200
+Average number of time intervals per segment: 30.0
+Minimum number of time intervals in a segment: 30
+Maximum number of time intervals in a segment: 30
