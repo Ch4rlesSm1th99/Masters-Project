@@ -165,7 +165,7 @@ import matplotlib.pyplot as plt
 import random
 
 
-h5_file_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\beam_0_selected_data.h5"
+h5_file_path = r"/Masters-Project/charles/data/beam_0_selected_data.h5"
 
 # negative padding value used in your data
 negative_value = -9999

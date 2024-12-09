@@ -125,33 +125,29 @@ class SimCLR(nn.Module):
     def nt_xent_loss(self, z_i, z_j):
         """
         NT-Xent loss function as used in SimCLR.
-
         Args:
             z_i (torch.Tensor): Projected features from the first set of augmentations.
             z_j (torch.Tensor): Projected features from the second set of augmentations.
 
         Returns:
-            torch.Tensor: Loss value.
+            loss: loss value.
         """
         batch_size = z_i.size(0)
-        z = torch.cat([z_i, z_j], dim=0)  # [2 * batch_size, dim]
+        z = torch.cat([z_i, z_j], dim=0)
 
-        # compute similarity matrix
-        sim = torch.matmul(z, z.T)  # [2 * batch_size, 2 * batch_size]
-        sim = sim / self.temperature
+        # computes similarity matrix
+        xcs = F.cosine_similarity(z[:, None, :], z[None, :, :], dim=-1)
 
-        # mask to remove self-comparisons
-        mask = torch.eye(2 * batch_size, dtype=torch.bool).to(self.device)
-        sim = sim.masked_fill(mask, float('-inf'))
+        # fill diagonal with -inf for same elements
+        xcs[torch.eye(xcs.size(0)).bool()] = float("-inf")
 
-        # positive pairs
-        labels = torch.arange(batch_size).to(self.device)
-        labels = torch.cat([labels, labels], dim=0)
-        labels = (labels.unsqueeze(0) == labels.unsqueeze(1)).float()
-        labels = labels.masked_fill(mask, 0)
-        labels = labels / labels.sum(dim=1, keepdim=True)
+        # Positive pair indices
+        target = torch.arange(batch_size, device=xcs.device)
+        target = torch.cat([target + batch_size, target])
 
-        loss = - (labels * F.log_softmax(sim, dim=1)).sum(dim=1).mean()
+        xcs /= self.temperature
+
+        loss = F.cross_entropy(xcs, target, reduction="mean")
         return loss
 
 

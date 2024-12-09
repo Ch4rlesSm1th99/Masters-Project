@@ -12,7 +12,7 @@ import random
 warnings.filterwarnings("ignore", category=UserWarning)
 
 # user options
-debugging_mode = False  # true for debugging data directory
+debugging_mode = True  # true for debugging data directory
 plotting_enabled = True  # enable or disable plotting
 extract_data = True  # extract data into segments or just plot
 logging_enabled = True  # enable or disable logging to a file
