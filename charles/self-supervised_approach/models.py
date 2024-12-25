@@ -191,3 +191,137 @@ def SimCLR_topk_accuracy(z_i, z_j, temperature=0.5, top_k=1):
     accuracy = correct.mean().item() * 100
 
     return accuracy
+
+
+# -------------------------------------------------------------------
+# BYOL Implementation
+# -------------------------------------------------------------------
+
+class BYOL(nn.Module):
+    """
+    BYOL model that includes:
+      - Online network (Encoder + Projector + Predictor)
+      - Target network (Encoder + Projector)
+    """
+    def __init__(self, base_encoder, projection_dim=128, hidden_dim=2048, moving_avg_decay=0.99, device='cuda'):
+        super(BYOL, self).__init__()
+        self.device = device
+        self.moving_avg_decay = moving_avg_decay
+
+        # -------------------------
+        # Online network
+        # -------------------------
+        self.online_encoder = base_encoder
+        with torch.no_grad():
+            dummy_input = torch.randn(1, 1, 30, 75).to(device)
+            encoder_output = self.online_encoder(dummy_input)
+            encoder_output_dim = encoder_output.shape[-1]
+            if len(encoder_output.shape) > 1:
+                encoder_output_dim = encoder_output.shape[1]
+
+        self.online_projector = ProjectionHead(
+            input_dim=encoder_output_dim,
+            hidden_dim=hidden_dim,
+            output_dim=projection_dim
+        )
+
+        self.online_predictor = nn.Sequential(
+            nn.Linear(projection_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, projection_dim)
+        )
+
+        # -------------------------
+        # Target network
+        # -------------------------
+        self.target_encoder = base_encoder
+        self.target_projector = ProjectionHead(
+            input_dim=encoder_output_dim,
+            hidden_dim=hidden_dim,
+            output_dim=projection_dim
+        )
+
+        # Make sure target always starts as a copy of online
+        self._init_target_network()
+
+    def _init_target_network(self):
+        for param_o, param_t in zip(
+            self.online_encoder.parameters(), self.target_encoder.parameters()
+        ):
+            param_t.data.copy_(param_o.data)
+            param_t.requires_grad = False
+
+        for param_o, param_t in zip(
+            self.online_projector.parameters(), self.target_projector.parameters()
+        ):
+            param_t.data.copy_(param_o.data)
+            param_t.requires_grad = False
+
+    @torch.no_grad()
+    def update_target_network(self):
+        """
+        Momentum update of target network.
+        theta_t = m * theta_t + (1 - m) * theta_o
+        """
+        for param_o, param_t in zip(
+            self.online_encoder.parameters(), self.target_encoder.parameters()
+        ):
+            param_t.data = param_t.data * self.moving_avg_decay + \
+                           param_o.data * (1.0 - self.moving_avg_decay)
+
+        for param_o, param_t in zip(
+            self.online_projector.parameters(), self.target_projector.parameters()
+        ):
+            param_t.data = param_t.data * self.moving_avg_decay + \
+                           param_o.data * (1.0 - self.moving_avg_decay)
+
+    def forward(self, x1, x2):
+        """
+        x1, x2: Two augmented views of the same batch.
+        Returns a tuple: p1, z1, p2, z2
+         - p1, p2: the online prediction
+         - z1, z2: the target projection
+        """
+        # ------------------------
+        # online side
+        # ------------------------
+        o1 = self.online_encoder(x1)                     # batch x feat
+        o1 = self.online_projector(o1)                   # batch x proj_dim
+        p1 = self.online_predictor(o1)                   # batch x proj_dim
+        p1 = F.normalize(p1, dim=1)
+
+        o2 = self.online_encoder(x2)
+        o2 = self.online_projector(o2)
+        p2 = self.online_predictor(o2)
+        p2 = F.normalize(p2, dim=1)
+
+        # ------------------------
+        # target side
+        # ------------------------
+        with torch.no_grad():
+            t1 = self.target_encoder(x1)
+            t1 = self.target_projector(t1)
+            t1 = F.normalize(t1, dim=1)
+
+            t2 = self.target_encoder(x2)
+            t2 = self.target_projector(t2)
+            t2 = F.normalize(t2, dim=1)
+
+        return p1, t1, p2, t2
+
+    def compute_loss(self, x1, x2):
+        """
+        Compute BYOL loss given two batches of augmented data.
+        The standard BYOL loss is the mean squared error of normalized predictions and targets:
+            L = 2 - 2 * cos_sim(p1, t2) + 2 - 2 * cos_sim(p2, t1)
+        """
+        p1, t1, p2, t2 = self.forward(x1, x2)
+
+        # BYOL uses negative cosine similarity or MSE on normalized vectors.
+        # simple version: L = 2 - 2 * cos_sim(p1, t2) ...
+        loss_fn = lambda p, t: 2 - 2 * F.cosine_similarity(p, t, dim=-1)
+
+        loss_1 = loss_fn(p1, t2)
+        loss_2 = loss_fn(p2, t1)
+        loss = (loss_1 + loss_2).mean()
+        return loss
