@@ -107,7 +107,6 @@ def main(args):
         'verbose': False
     }
 
-    # Datasets and DataLoaders
     train_dataset = SuperDARNDataset(
         args.train_h5_file_path,
         negative_value=-9999,
@@ -139,7 +138,6 @@ def main(args):
         drop_last=True
     )
 
-    # Model Selection
     base_encoder = BaseEncoder(input_channels=1)
 
     if args.model_type.upper() == "SIMCLR":
@@ -174,7 +172,6 @@ def main(args):
 
         scheduler.step()
 
-        # save checkpoint
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             epochs_without_improvement = 0
@@ -231,12 +228,9 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, args):
             elif isinstance(model, BYOL):
                 loss = model.compute_loss(x_i, x_j)
                 # For BYOL, top-k accuracy is less standard.
-                # We'll adapt SimCLR_topk_accuracy to p1 vs. p2 or p1 vs. t2.
-                # For demonstration, let's just compute it on the online projections p1 vs. p2:
-                # (This is purely optional and won't necessarily reflect standard BYOL metrics)
                 with torch.no_grad():
                     p1, t1, p2, t2 = model.forward(x_i, x_j)
-                    # We'll treat p1 & p2 like z_i & z_j from SimCLR for the sake of consistency.
+                    # we treat p1 & p2 like z_i & z_j from SimCLR for the sake of consistency.
                     accuracy = SimCLR_topk_accuracy(p1, p2, temperature=0.5, top_k=1)
 
             loss.backward()
@@ -290,9 +284,6 @@ def validate(model, data_loader, device, epoch, args):
                 # -------------------------------------------
                 elif isinstance(model, BYOL):
                     loss = model.compute_loss(x_i, x_j)
-                    # If you want to measure some accuracy-like metric,
-                    # you could do so with the online predictions p1 vs. p2,
-                    # or p1 vs. t2, etc.
                     p1, t1, p2, t2 = model.forward(x_i, x_j)
 
                     acc_top1 = SimCLR_topk_accuracy(p1, p2, temperature=0.5,
