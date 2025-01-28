@@ -8,68 +8,87 @@ def random_time_crop_resize(
     data,
     negative_value=-9999,
     time_crop_frac_range=(0.8, 1.0),
-    min_valid_ratio=0.2,
+    min_valid_ratio=0.0,
     max_tries=20,
     verbose=False
 ):
     """
-    Randomly crop the time dimension of the data (shape: (time_steps, range_gates))
-    and then resize back to the original number of time steps (leaving range dimension
-    unchanged). This is a 1D interpolation along axis=0.
+    randomly crop the time dimension from either the left side or the right side (50/50 chance).
+    then resize back to the original number of time steps (leaving the range dimension
+    unchanged). uses 1d interpolation along axis=0 (nearest neighbor by default).
 
-    Parameters
+    parameters
     ----------
     data : np.ndarray
-        Input array of shape (time_steps, range_gates).
+        input array of shape (time_steps, range_gates).
     negative_value : float
-        Value indicating missing data (e.g., -9999).
+        value indicating missing data (e.g., -9999).
     time_crop_frac_range : tuple
         (min_frac, max_frac) fraction of the original time dimension to keep.
-        E.g., (0.8, 1.0) means we'll randomly crop 80% to 100% of time steps.
+        e.g., (0.8, 1.0) means we'll randomly keep 80% to 100% of the time steps.
     min_valid_ratio : float
-        Min fraction of non-missing data required in the chosen subrange.
+        min fraction of non-missing data required in the chosen subrange.
     max_tries : int
-        Number of attempts to find a valid subrange.
+        number of attempts to find a valid subregion.
     verbose : bool
-        If True, prints debug messages.
+        if true, prints debug messages.
 
-    Returns
+    returns
     -------
     np.ndarray
-        Cropped and then time-resized array, same shape as original.
+        cropped and then time-resized array, same shape as original.
     """
+    import numpy as np
+    from scipy.ndimage import zoom
+
     data_out = data.copy()
     time_dim, range_dim = data_out.shape
-    valid_mask = (data_out != negative_value)   # this mask shows which points are valid (ie not padding)
+    valid_mask = (data_out != negative_value)
 
-    for _ in range(max_tries):
-        crop_t_size = int(time_dim * np.random.uniform(*time_crop_frac_range))  # pick how many time steps we'll keep
-        crop_t_size = max(1, min(crop_t_size, time_dim))  # clamp so we don't go out of total time range
+    for attempt_i in range(max_tries):
+        # pick how many time steps we'll keep
+        crop_t_size = int(time_dim * np.random.uniform(*time_crop_frac_range))
+        crop_t_size = max(1, min(crop_t_size, time_dim))  # clamp so we don't exceed bounds
 
-        t_start = np.random.randint(0, time_dim - crop_t_size + 1)    # pick a random start index along the time axis
-        t_end = t_start + crop_t_size
+        # 50% chance to crop from the left, 50% from the right
+        if np.random.rand() < 0.5:
+            # crop from left
+            t_start = 0
+            t_end = crop_t_size
+            side = "LEFT"
+        else:
+            # crop from right
+            t_start = time_dim - crop_t_size
+            t_end = time_dim
+            side = "RIGHT"
 
-        subregion = data_out[t_start:t_end, :]      # extract the subregion in time
+        subregion = data_out[t_start:t_end, :]
         subregion_mask = valid_mask[t_start:t_end, :]
 
-        # check how many valid points we have in this slice
-        valid_ratio = np.sum(subregion_mask) / (crop_t_size * range_dim)
+        # check how many valid points we have in this subregion
+        valid_ratio = np.sum(subregion_mask) / float(crop_t_size * range_dim)
+
         if valid_ratio < min_valid_ratio:
-            # not enough valid data --> reattempt upto max tries
+            # not enough valid data --> try again
             continue
 
-        # resize subregion back to the original time_dim only
+        # resize subregion back to the original time_dim
         zoom_factor_t = time_dim / float(crop_t_size)
-        resized = zoom(subregion, (zoom_factor_t, 1), order=1)  # order=1 means bilinear interpolation
+        # nearest-neighbor by default (order=0). switch to order=1 for bilinear if you prefer
+        resized = zoom(subregion, (zoom_factor_t, 1), order=0)      # bilinear breaks loader at the moment
 
         if verbose:
-            print(f"[random_time_crop_resize] success: t_crop={crop_t_size}, valid_ratio={valid_ratio:.2f}")
+            # note: t_end-1 is the last index included if you think of it as inclusive range
+            print(f"[random_time_crop_resize] success ({side}): t_crop={crop_t_size}, valid_ratio={valid_ratio:.2f},"
+                  f" subrange=({t_start} -> {t_end-1})")
         return resized
 
-    # if we never find a subrange that meets the valid ratio, return original
+    # if we never find a subregion that meets the valid ratio, return original
     if verbose:
         print("[random_time_crop_resize] failed to find valid subregion, returning original.")
     return data_out
+
+
 
 
 def augment_power(
@@ -77,57 +96,57 @@ def augment_power(
     negative_value=-9999,
     noise_strength=0.01,
     scale_range=(0.9, 1.1),
-    swap_prob=0.1,
+    swap_prob=0.5,
     mask_prob=0.1,
     time_crop_frac_range=(0.8, 1.0),
-    min_valid_ratio=0.4,
-    max_tries=5,
+    min_valid_ratio=0.0,
+    max_tries=20,
     augment_probabilities=None,
     verbose=False
 ):
     """
-    Apply the following augmentations to power data (time_steps x range_gates):
-      1) Random time-only crop+resize
-      2) Add noise
-      3) Scale data
-      4) Swap adjacent range gates
-      5) Mask data
+    apply the following augmentations to power data (time_steps x range_gates):
+      1) random time-only crop+resize
+      2) add noise
+      3) scale data
+      4) swap adjacent range gates
+      5) mask data
 
-    Parameters
+    parameters
     ----------
     data : np.ndarray
-        Shape (time_steps, range_gates).
+        shape (time_steps, range_gates).
     negative_value : float
-        Missing data value (e.g., -9999).
+        missing data value (e.g., -9999).
     noise_strength : float
-        Std dev of Gaussian noise.
+        std dev of gaussian noise.
     scale_range : tuple
-        Range for random scaling factor.
+        range for random scaling factor.
     swap_prob : float
-        Probability of swapping adjacent gates in a row.
+        probability of swapping adjacent gates in a row.
     mask_prob : float
-        Probability of masking valid points with negative_value.
+        probability of masking valid points with negative_value.
     time_crop_frac_range : tuple
         (min_frac, max_frac) for time-only cropping.
     min_valid_ratio : float
-        Minimum fraction of valid data in the cropped subregion.
+        minimum fraction of valid data in the cropped subregion.
     max_tries : int
-        Attempts to find a valid subregion for cropping.
+        attempts to find a valid subregion for cropping.
     augment_probabilities : dict
         e.g. {
-          'time_crop_resize': 0.5,
-          'add_noise': 0.5,
-          'scale_data': 0.5,
+          'time_crop_resize': 1.0,
+          'add_noise': 1.0,
+          'scale_data': 1.0,
           'swap_adjacent_range_gates': 0.5,
           'mask_data': 0.5
         }
     verbose : bool
-        Print debug info if True.
+        print debug info if true.
 
-    Returns
+    returns
     -------
     np.ndarray
-        Augmented data, same shape as input.
+        augmented data, same shape as input.
     """
 
     data_aug = data.copy()
@@ -135,9 +154,9 @@ def augment_power(
     # default vals
     if augment_probabilities is None:
         augment_probabilities = {
-            'time_crop_resize': 0.5,
-            'add_noise': 0.5,
-            'scale_data': 0.5,
+            'time_crop_resize': 1.0,
+            'add_noise': 1.0,
+            'scale_data': 1.0,
             'swap_adjacent_range_gates': 0.5,
             'mask_data': 0.5
         }
@@ -214,7 +233,7 @@ def augment_power(
 
 if __name__ == "__main__":
     """
-    Test: Load a random segment from train.h5, apply time-only cropping (+ other augmentations)
+    test: load a random segment from train.h5, apply time-only cropping (+ other augmentations)
           twice to get two augmented views, then plot them alongside the original.
     """
     import os
@@ -222,13 +241,13 @@ if __name__ == "__main__":
     h5_file_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\train.h5"
     NEG_VALUE = -9999
 
-    # Probability config for time-only augmentation
+    # probability config for time-only augmentation
     aug_probs = {
         'time_crop_resize': 1.0,  # always do time-only crop
-        'add_noise': 0.8,
-        'scale_data': 0.8,
+        'add_noise': 1.0,
+        'scale_data': 1.0,
         'swap_adjacent_range_gates': 0.5,
-        'mask_data': 0.5
+        'mask_data': 0.0
     }
 
     with h5py.File(h5_file_path, 'r') as hf:
@@ -244,10 +263,10 @@ if __name__ == "__main__":
         negative_value=NEG_VALUE,
         noise_strength=0.1,
         scale_range=(0.8, 1.2),
-        swap_prob=0.3,
+        swap_prob=0.4,
         mask_prob=0.2,
         time_crop_frac_range=(0.7, 1.0),  # bigger range, e.g. 70% to 100%
-        min_valid_ratio=0.0,             # currently set to no threshold --> 100% apply
+        min_valid_ratio=0.0,             # currently set to no threshold
         max_tries=5,
         augment_probabilities=aug_probs,
         verbose=True
@@ -260,16 +279,16 @@ if __name__ == "__main__":
         negative_value=NEG_VALUE,
         noise_strength=0.1,
         scale_range=(0.8, 1.2),
-        swap_prob=0.3,
+        swap_prob=0.4,
         mask_prob=0.2,
         time_crop_frac_range=(0.7, 1.0),
-        min_valid_ratio=0.3,
+        min_valid_ratio=0.0,
         max_tries=5,
         augment_probabilities=aug_probs,
         verbose=True
     )
 
-    #  original vs. two augmented
+    # original vs. two augmented
     fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
     # og
