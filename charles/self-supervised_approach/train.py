@@ -13,9 +13,11 @@ from models import BaseEncoder, SimCLR, BYOL, SimCLR_topk_accuracy
 def parse_args():
     parser = argparse.ArgumentParser(description="Train a SimCLR/BYOL model with configurable parameters.")
 
-    parser.add_argument('--model_type', type=str, default='SimCLR',
+    # Model Type
+    parser.add_argument('--model_type', type=str, default='SimCLR', choices=['SimCLR', 'BYOL'],
                         help='Which model to train: SimCLR or BYOL.')
 
+    # File Paths
     parser.add_argument('--train_h5_file_path', type=str,
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\train.h5",
                         help='Path to training H5 file.')
@@ -26,7 +28,7 @@ def parse_args():
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR",
                         help='Directory to save checkpoints and logs.')
 
-    # train params
+    # Training Parameters
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size for training and validation.')
     parser.add_argument('--num_epochs', type=int, default=100, help='Number of training epochs.')
     parser.add_argument('--learning_rate', type=float, default=1e-3, help='Learning rate.')
@@ -38,21 +40,39 @@ def parse_args():
     parser.add_argument('--moving_avg_decay', type=float, default=0.99,
                         help='Exponential moving average decay for BYOL target network.')
 
-    # aug params
-    parser.add_argument('--noise_strength', type=float, default=0.02, help='Noise strength for augmentations.')
+    # Augmentation Parameters
+    parser.add_argument('--noise_strength', type=float, default=0.02, help='Strength of noise augmentation.')
     parser.add_argument('--scale_min', type=float, default=0.95, help='Minimum scale factor for scaling augmentation.')
     parser.add_argument('--scale_max', type=float, default=1.05, help='Maximum scale factor for scaling augmentation.')
-    parser.add_argument('--max_shift', type=int, default=2, help='Max shift for translation augmentations.')
-    parser.add_argument('--max_removed_points', type=int, default=25, help='Max number of points removed.')
-    parser.add_argument('--swap_prob', type=float, default=0.1, help='Probability of swapping adjacent range gates.')
-    parser.add_argument('--mask_prob', type=float, default=0.1, help='Probability of masking data.')
-    # probabilities of applying certain augmentations
-    parser.add_argument('--translate_y_prob', type=float, default=0.5, help='Probability of translating along Y-axis.')
-    parser.add_argument('--translate_x_prob', type=float, default=0.5, help='Probability of translating along X-axis.')
-    parser.add_argument('--swap_adj_prob', type=float, default=0.5, help='Probability of swapping adjacent gates.')
-    parser.add_argument('--mask_data_prob', type=float, default=0.5, help='Probability of masking data.')
+
+    # Time Cropping Augmentation (Newly Added)
+    parser.add_argument('--time_crop_min', type=float, default=0.7,
+                        help='Minimum fraction of the time range to keep during cropping.')
+    parser.add_argument('--time_crop_max', type=float, default=1.0,
+                        help='Maximum fraction of the time range to keep during cropping.')
+    parser.add_argument('--min_valid_ratio', type=float, default=0.3,
+                        help='Minimum proportion of valid (non-missing) data required after cropping.')
+
+    # Swapping & Masking Augmentation
+    parser.add_argument('--swap_intensity', type=float, default=0.1,
+                        help='Proportion of valid data points that are swapped.')
+    parser.add_argument('--mask_intensity', type=float, default=0.1,
+                        help='Proportion of valid data points that are masked.')
+
+    # Probabilities of Applying Augmentations
+    parser.add_argument('--time_crop_prob', type=float, default=1.0,
+                        help='Probability of applying time cropping.')
+    parser.add_argument('--add_noise_prob', type=float, default=1.0,
+                        help='Probability of applying noise augmentation.')
+    parser.add_argument('--scale_data_prob', type=float, default=1.0,
+                        help='Probability of applying scaling augmentation.')
+    parser.add_argument('--swap_adj_prob', type=float, default=0.5,
+                        help='Probability of swapping adjacent gates.')
+    parser.add_argument('--mask_data_prob', type=float, default=0.0,
+                        help='Probability of applying data masking.')
 
     return parser.parse_args()
+
 
 
 def main(args):
@@ -92,15 +112,17 @@ def main(args):
         'negative_value': -9999,
         'noise_strength': args.noise_strength,
         'scale_range': (args.scale_min, args.scale_max),
-        'max_shift': args.max_shift,
-        'max_removed_points': args.max_removed_points,
-        'swap_prob': args.swap_prob,
-        'mask_prob': args.mask_prob,
+        'swap_prob': args.swap_intensity,
+        'mask_prob': args.mask_intensity,
+
+        # Time Cropping Specific
+        'time_crop_frac_range': (args.time_crop_min, args.time_crop_max),
+        'min_valid_ratio': args.min_valid_ratio,
+
         'augment_probabilities': {
-            'add_noise': 1.0,
-            'scale_data': 1.0,
-            'translate_y': args.translate_y_prob,
-            'translate_x': args.translate_x_prob,
+            'time_crop_resize': args.time_crop_prob,
+            'add_noise': args.add_noise_prob,
+            'scale_data': args.scale_data_prob,
             'swap_adjacent_range_gates': args.swap_adj_prob,
             'mask_data': args.mask_data_prob
         },
@@ -192,9 +214,9 @@ def main(args):
 def train_one_epoch(model, data_loader, optimizer, device, epoch, args):
     """
     If model is SimCLR:
-       - We'll do the standard z_i, z_j forward + NT-Xent loss
+       - do the standard z_i, z_j forward + NT-Xent loss
     If model is BYOL:
-       - We'll do the p1, t1, p2, t2 forward + BYOL loss
+       - do the p1, t1, p2, t2 forward + BYOL loss
        - Then call model.update_target_network()
     """
     model.train()
