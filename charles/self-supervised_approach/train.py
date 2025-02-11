@@ -17,7 +17,6 @@ def parse_args():
     parser.add_argument('--model_type', type=str, default='SimCLR', choices=['SimCLR', 'BYOL'],
                         help='Which model to train: SimCLR or BYOL.')
 
-    # File Paths
     parser.add_argument('--train_h5_file_path', type=str,
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\train.h5",
                         help='Path to training H5 file.')
@@ -28,7 +27,7 @@ def parse_args():
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR",
                         help='Directory to save checkpoints and logs.')
 
-    # Training Parameters
+    # training params
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size for training and validation.')
     parser.add_argument('--num_epochs', type=int, default=100, help='Number of training epochs.')
     parser.add_argument('--learning_rate', type=float, default=1e-3, help='Learning rate.')
@@ -36,16 +35,16 @@ def parse_args():
     parser.add_argument('--projection_dim', type=int, default=128, help='Projection dimension.')
     parser.add_argument('--patience', type=int, default=5, help='Patience for early stopping.')
 
-    # BYOL-specific (optional)
+    # BYOL- params
     parser.add_argument('--moving_avg_decay', type=float, default=0.99,
                         help='Exponential moving average decay for BYOL target network.')
 
-    # Augmentation Parameters
+    # augmentation params
     parser.add_argument('--noise_strength', type=float, default=0.02, help='Strength of noise augmentation.')
     parser.add_argument('--scale_min', type=float, default=0.95, help='Minimum scale factor for scaling augmentation.')
     parser.add_argument('--scale_max', type=float, default=1.05, help='Maximum scale factor for scaling augmentation.')
 
-    # Time Cropping Augmentation (Newly Added)
+    # time cropping augmentation limits and probs
     parser.add_argument('--time_crop_min', type=float, default=0.7,
                         help='Minimum fraction of the time range to keep during cropping.')
     parser.add_argument('--time_crop_max', type=float, default=1.0,
@@ -53,7 +52,7 @@ def parse_args():
     parser.add_argument('--min_valid_ratio', type=float, default=0.3,
                         help='Minimum proportion of valid (non-missing) data required after cropping.')
 
-    # Swapping & Masking Augmentation
+    # swapping and masking params and probs
     parser.add_argument('--swap_intensity', type=float, default=0.1,
                         help='Proportion of valid data points that are swapped.')
     parser.add_argument('--mask_intensity', type=float, default=0.1,
@@ -78,7 +77,7 @@ def parse_args():
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # Generate unique experiment directory
+    # init directory
     from datetime import datetime
     experiment_name = f"{args.model_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     experiment_dir = os.path.join(r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\experiments", experiment_name)
@@ -88,13 +87,13 @@ def main(args):
     os.makedirs(log_dir, exist_ok=True)
     os.makedirs(ckpt_dir, exist_ok=True)
 
-    # Save configuration to config.txt
+    # savve to config.txt
     config_path = os.path.join(experiment_dir, "config.txt")
     with open(config_path, "w") as f:
         for arg, value in vars(args).items():
             f.write(f"{arg}: {value}\n")
 
-    # Set up logging
+    # init log
     log_file_path = os.path.join(log_dir, "training.log")
     logging.basicConfig(
         filename=log_file_path,
@@ -107,7 +106,7 @@ def main(args):
     best_val_loss = float('inf')
     epochs_without_improvement = 0
 
-    # Augmentation Parameters
+    # aug params
     augment_params = {
         'negative_value': -9999,
         'noise_strength': args.noise_strength,
@@ -184,7 +183,9 @@ def main(args):
     optimizer = optim.Adam(model.parameters(), lr=args.learning_rate)
     scheduler = optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=args.num_epochs)
 
-    # Training Loop
+    # ----------------------------------
+    # training loop here
+    # ----------------------------------
     for epoch in range(1, args.num_epochs + 1):
         train_loss, train_accuracy = train_one_epoch(model, train_loader, optimizer, device, epoch, args)
 
@@ -229,14 +230,14 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, args):
             # batch_data has 2*N examples in it due to contrastive_collate_fn
             x_i, x_j = torch.chunk(batch_data, 2, dim=0)
 
-            # Add channel dimension
+            # + channel dim
             x_i = x_i.unsqueeze(1).to(device)
             x_j = x_j.unsqueeze(1).to(device)
 
             optimizer.zero_grad()
 
             # -------------------------------------------------
-            #  SIMCLR
+            #  SIMCLR acc
             # -------------------------------------------------
             if isinstance(model, SimCLR):
                 z_i = model(x_i)
@@ -245,20 +246,20 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, args):
                 accuracy = SimCLR_topk_accuracy(z_i, z_j, temperature=model.temperature, top_k=1)
 
             # -------------------------------------------------
-            #  BYOL
+            #  BYOL acc
             # -------------------------------------------------
             elif isinstance(model, BYOL):
                 loss = model.compute_loss(x_i, x_j)
                 # For BYOL, top-k accuracy is less standard.
                 with torch.no_grad():
                     p1, t1, p2, t2 = model.forward(x_i, x_j)
-                    # we treat p1 & p2 like z_i & z_j from SimCLR for the sake of consistency.
+                    # p1, p2 equivelant to zi, zj for simclr
                     accuracy = SimCLR_topk_accuracy(p1, p2, temperature=0.5, top_k=1)
 
             loss.backward()
             optimizer.step()
 
-            # For BYOL, we should update the target network after each step or each epoch
+            # for BYOL, target network updated with moment vals each epoch
             if isinstance(model, BYOL):
                 model.update_target_network()
 
@@ -288,7 +289,7 @@ def validate(model, data_loader, device, epoch, args):
                 x_j = x_j.unsqueeze(1).to(device)
 
                 # -------------------------------------------
-                # Validation logic for SimCLR
+                # Validation for SimCLR
                 # -------------------------------------------
                 if isinstance(model, SimCLR):
                     z_i = model(x_i)
@@ -302,7 +303,7 @@ def validate(model, data_loader, device, epoch, args):
                                                      top_k=min(10, 2 * data_loader.batch_size))
 
                 # -------------------------------------------
-                # Validation logic for BYOL
+                # Validation for BYOL
                 # -------------------------------------------
                 elif isinstance(model, BYOL):
                     loss = model.compute_loss(x_i, x_j)
