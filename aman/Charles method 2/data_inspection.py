@@ -1,3 +1,4 @@
+
 import os
 import bz2
 import pydarn
@@ -9,7 +10,7 @@ import warnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
-data_directory = r"C:\Users\aman\Desktop\MPhys Data\Data\1995"
+data_directory = r"C:\Users\aman\Desktop\MPhys Data\Data\2017"
 
 
 files = [f for f in os.listdir(data_directory) if f.endswith('.bz2')]
@@ -92,7 +93,7 @@ else:
         print(f"Total number of range gates: {len(unique_range_gates)}")
 
         # create a 3D array (time x beams x range gates) for each feature
-        beam_of_interest = unique_beams[0]
+        beam_of_interest = unique_beams[10]
         df_beam = df[df['bmnum'] == beam_of_interest]
 
         power_pivot = df_beam.pivot_table(index='time', columns='range_gate', values='p_l')
@@ -129,6 +130,7 @@ else:
 
     except Exception as e:
         print(f"An error occurred: {e}")
+
 
 
 

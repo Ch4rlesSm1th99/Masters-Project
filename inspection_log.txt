@@ -1,0 +1,359 @@
+
+Beam group: beam_0 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:47
+  End Time:   2002-02-08T19:00:47
+  Beam Num:   0
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.4500000476837158, max: 26.290000915527344, mean: 8.304787635803223
+  Velocity - min: -1276.699951171875, max: 1473.300048828125, mean: 31.904117584228516
+  Spectral Width - min: 0.0, max: 1876.699951171875, mean: 55.91387939453125
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:47
+  End Time:   2002-02-08T20:00:47
+  Beam Num:   0
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.8300000429153442, max: 34.529998779296875, mean: 11.454913139343262
+  Velocity - min: -757.0999755859375, max: 1319.4000244140625, mean: 21.949338912963867
+  Spectral Width - min: 0.0, max: 1598.5, mean: 27.385726928710938
+
+
+Beam group: beam_1 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:44
+  End Time:   2002-02-08T19:00:44
+  Beam Num:   1
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -3.430000066757202, max: 36.36000061035156, mean: 8.556217193603516
+  Velocity - min: -722.5, max: 1161.199951171875, mean: 60.487056732177734
+  Spectral Width - min: 0.0, max: 1126.800048828125, mean: 50.70586395263672
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:44
+  End Time:   2002-02-08T20:00:44
+  Beam Num:   1
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.4800000190734863, max: 33.61000061035156, mean: 11.063457489013672
+  Velocity - min: -1085.5, max: 1516.0, mean: 70.71282196044922
+  Spectral Width - min: 0.0, max: 1804.5999755859375, mean: 42.50790023803711
+
+
+Beam group: beam_10 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:16
+  End Time:   2002-02-08T19:00:16
+  Beam Num:   10
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -2.2799999713897705, max: 30.579999923706055, mean: 8.797813415527344
+  Velocity - min: -1505.199951171875, max: 1671.199951171875, mean: -297.4444580078125
+  Spectral Width - min: 0.10000000149011612, max: 3276.699951171875, mean: 177.26199340820312
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:16
+  End Time:   2002-02-08T20:00:16
+  Beam Num:   10
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -2.75, max: 41.31999969482422, mean: 9.353523254394531
+  Velocity - min: -1231.5, max: 1598.699951171875, mean: -143.9706268310547
+  Spectral Width - min: 0.0, max: 2325.699951171875, mean: 87.63916015625
+
+
+Beam group: beam_11 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:13
+  End Time:   2002-02-08T19:00:13
+  Beam Num:   11
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.2100000381469727, max: 35.90999984741211, mean: 8.97625883014763
+  Velocity - min: -1016.5999755859375, max: 619.0999755859375, mean: -210.88788253760512
+  Spectral Width - min: 0.0, max: 2212.199951171875, mean: 178.91435322069069
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:13
+  End Time:   2002-02-08T20:00:13
+  Beam Num:   11
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -0.33000001311302185, max: 39.66999816894531, mean: 8.617556146435566
+  Velocity - min: -1052.199951171875, max: 646.4000244140625, mean: -102.88167129709366
+  Spectral Width - min: 0.0, max: 2423.0, mean: 88.33234491539318
+
+
+Beam group: beam_12 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:10
+  End Time:   2002-02-08T19:00:10
+  Beam Num:   12
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -0.8600000143051147, max: 38.02000045776367, mean: 8.944271082113707
+  Velocity - min: -797.4000244140625, max: 457.29998779296875, mean: -113.3997723034547
+  Spectral Width - min: 0.20000000298023224, max: 1797.199951171875, mean: 152.98382683722875
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:10
+  End Time:   2002-02-08T20:00:10
+  Beam Num:   12
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.8799999952316284, max: 31.149999618530273, mean: 8.270478614145043
+  Velocity - min: -848.4000244140625, max: 410.1000061035156, mean: -45.52240329299524
+  Spectral Width - min: 0.0, max: 2005.4000244140625, mean: 77.06293277921205
+
+
+Beam group: beam_13 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:07
+  End Time:   2002-02-08T19:00:07
+  Beam Num:   13
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -16.489999771118164, max: 30.6299991607666, mean: 8.325682047728936
+  Velocity - min: -822.2000122070312, max: 423.3999938964844, mean: -21.290088347688506
+  Spectral Width - min: 0.0, max: 1614.0, mean: 65.70804709868763
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:07
+  End Time:   2002-02-08T20:00:07
+  Beam Num:   13
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -2.2200000286102295, max: 24.969999313354492, mean: 7.700800383935899
+  Velocity - min: -881.2999877929688, max: 416.8999938964844, mean: -7.6374155687188
+  Spectral Width - min: 0.0, max: 1409.800048828125, mean: 39.88389584646276
+
+
+Beam group: beam_14 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:03
+  End Time:   2002-02-08T19:00:03
+  Beam Num:   14
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: 0.2199999988079071, max: 33.189998626708984, mean: 10.24449407679938
+  Velocity - min: -815.9000244140625, max: 781.7999877929688, mean: -9.14527831065137
+  Spectral Width - min: 0.0, max: 1773.800048828125, mean: 39.429089483244326
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:03
+  End Time:   2002-02-08T20:00:03
+  Beam Num:   14
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -0.8999999761581421, max: 30.860000610351562, mean: 9.009632354504824
+  Velocity - min: -1226.0999755859375, max: 745.7000122070312, mean: -5.164052255299502
+  Spectral Width - min: 0.0, max: 1459.800048828125, mean: 27.466094827285534
+
+
+Beam group: beam_15 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:00
+  End Time:   2002-02-08T19:00:00
+  Beam Num:   15
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: 0.949999988079071, max: 30.8700008392334, mean: 11.480888366699219
+  Velocity - min: -977.0, max: 1005.7999877929688, mean: -5.604670524597168
+  Spectral Width - min: 0.0, max: 986.0999755859375, mean: 37.72445297241211
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:00
+  End Time:   2002-02-08T20:00:00
+  Beam Num:   15
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -0.03999999910593033, max: 52.66999816894531, mean: 10.568758964538574
+  Velocity - min: -1076.300048828125, max: 848.9000244140625, mean: 4.611214637756348
+  Spectral Width - min: 0.0, max: 537.7000122070312, mean: 28.483259201049805
+
+
+Beam group: beam_2 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:41
+  End Time:   2002-02-08T19:00:41
+  Beam Num:   2
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.7699999809265137, max: 39.209999084472656, mean: 10.369787239077244
+  Velocity - min: -945.7000122070312, max: 1316.0999755859375, mean: 56.56776586709187
+  Spectral Width - min: 0.0, max: 1083.300048828125, mean: 56.3953192838329
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:41
+  End Time:   2002-02-08T20:00:41
+  Beam Num:   2
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -0.47999998927116394, max: 37.13999938964844, mean: 10.834133568492177
+  Velocity - min: -1229.0, max: 1621.4000244140625, mean: 90.20297803470213
+  Spectral Width - min: 0.0, max: 1476.300048828125, mean: 53.70406139135657
+
+
+Beam group: beam_3 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:38
+  End Time:   2002-02-08T19:00:38
+  Beam Num:   3
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -6.389999866485596, max: 36.52000045776367, mean: 9.854657173156738
+  Velocity - min: -1441.9000244140625, max: 1765.0, mean: 62.753231048583984
+  Spectral Width - min: 0.0, max: 1277.0, mean: 92.75425720214844
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:38
+  End Time:   2002-02-08T20:00:38
+  Beam Num:   3
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -4.610000133514404, max: 34.459999084472656, mean: 10.950995445251465
+  Velocity - min: -1544.5, max: 1609.0999755859375, mean: 49.856327056884766
+  Spectral Width - min: 0.0, max: 1813.9000244140625, mean: 63.6609992980957
+
+
+Beam group: beam_4 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:35
+  End Time:   2002-02-08T19:00:35
+  Beam Num:   4
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -2.5999999046325684, max: 34.709999084472656, mean: 10.965258598327637
+  Velocity - min: -1200.800048828125, max: 1347.4000244140625, mean: 68.0710220336914
+  Spectral Width - min: 0.0, max: 1537.5, mean: 109.89251708984375
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:35
+  End Time:   2002-02-08T20:00:35
+  Beam Num:   4
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -3.4100000858306885, max: 40.9900016784668, mean: 11.816930770874023
+  Velocity - min: -1461.0999755859375, max: 1298.5999755859375, mean: 6.27044677734375
+  Spectral Width - min: 0.0, max: 2782.5, mean: 75.06024932861328
+
+
+Beam group: beam_5 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:32
+  End Time:   2002-02-08T19:00:32
+  Beam Num:   5
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -8.449999809265137, max: 40.33000183105469, mean: 11.046053886413574
+  Velocity - min: -1617.199951171875, max: 1552.5, mean: 16.443384170532227
+  Spectral Width - min: 0.0, max: 1468.300048828125, mean: 137.7406768798828
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:32
+  End Time:   2002-02-08T20:00:32
+  Beam Num:   5
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -4.949999809265137, max: 37.47999954223633, mean: 12.696796417236328
+  Velocity - min: -1724.9000244140625, max: 1756.0999755859375, mean: -35.13444519042969
+  Spectral Width - min: 0.0, max: 3276.699951171875, mean: 100.167724609375
+
+
+Beam group: beam_6 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:29
+  End Time:   2002-02-08T19:00:29
+  Beam Num:   6
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.809999942779541, max: 40.369998931884766, mean: 9.903956413269043
+  Velocity - min: -1620.300048828125, max: 1523.699951171875, mean: -92.17195892333984
+  Spectral Width - min: 0.0, max: 1435.5, mean: 147.38827514648438
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:29
+  End Time:   2002-02-08T20:00:29
+  Beam Num:   6
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.899999976158142, max: 40.189998626708984, mean: 11.299789428710938
+  Velocity - min: -1700.0999755859375, max: 1662.800048828125, mean: -72.16705322265625
+  Spectral Width - min: 0.0, max: 2210.39990234375, mean: 109.78079986572266
+
+
+Beam group: beam_7 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:26
+  End Time:   2002-02-08T19:00:26
+  Beam Num:   7
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.7000000476837158, max: 39.84000015258789, mean: 9.12082290649414
+  Velocity - min: -1749.4000244140625, max: 1237.300048828125, mean: -218.8003387451172
+  Spectral Width - min: 0.0, max: 2030.0, mean: 171.4758758544922
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:26
+  End Time:   2002-02-08T20:00:26
+  Beam Num:   7
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -6.900000095367432, max: 39.209999084472656, mean: 10.094303131103516
+  Velocity - min: -1445.0, max: 1802.9000244140625, mean: -179.37522888183594
+  Spectral Width - min: 0.0, max: 2063.60009765625, mean: 158.7357940673828
+
+
+Beam group: beam_8 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:22
+  End Time:   2002-02-08T19:00:22
+  Beam Num:   8
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -1.7400000095367432, max: 32.779998779296875, mean: 9.038359381117127
+  Velocity - min: -1667.0, max: 1557.199951171875, mean: -329.18749997803906
+  Spectral Width - min: 0.0, max: 1798.0, mean: 189.86674141901312
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:22
+  End Time:   2002-02-08T20:00:22
+  Beam Num:   8
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -3.7200000286102295, max: 37.20000076293945, mean: 10.29450846808189
+  Velocity - min: -1822.300048828125, max: 1401.4000244140625, mean: -221.67127096065147
+  Spectral Width - min: 0.0, max: 3276.699951171875, mean: 160.6008476721344
+
+
+Beam group: beam_9 with 2 segments.
+Segment: segment_0
+  Start Time: 2002-02-08T18:00:19
+  End Time:   2002-02-08T19:00:19
+  Beam Num:   9
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -6.010000228881836, max: 32.189998626708984, mean: 8.752967834472656
+  Velocity - min: -1634.4000244140625, max: 1526.300048828125, mean: -372.5815124511719
+  Spectral Width - min: 0.0, max: 2424.300048828125, mean: 192.64382934570312
+
+Segment: segment_1
+  Start Time: 2002-02-08T19:00:19
+  End Time:   2002-02-08T20:00:19
+  Beam Num:   9
+  Data shape: (30, 70, 3)
+  Time steps: 30
+  Power - min: -4.460000038146973, max: 33.27000045776367, mean: 9.82602596282959
+  Velocity - min: -1332.0, max: 1523.5, mean: -178.69932556152344
+  Spectral Width - min: 0.0, max: 2488.89990234375, mean: 113.9699478149414
+
+
+Overall statistics:
+  Total number of segments: 32
+  Total number of time steps across all segments: 960
+  Average number of time intervals per segment: 30.0
+  Min number of time intervals in a segment: 30
+  Max number of time intervals in a segment: 30

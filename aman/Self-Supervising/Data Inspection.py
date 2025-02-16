@@ -4,7 +4,7 @@ import pydarn
 import glob
 import matplotlib.pyplot as plt
 import numpy as np
-path = r"C:\MPhys Data\Data\Data Section\19951230.1600.00.han.fitacf.bz2"
+path = r"C:\Users\aman\Desktop\MPhys Data\Data\2017\20020208.1800.00.pgr.fitacf.bz2"
 
 
 with bz2.open(path) as fp:
@@ -70,3 +70,4 @@ def pre_process(data):
     padded_power = np.array(padded_power)
     padded_velocity = np.array(padded_velocity)
     return(padded_power, padded_velocity)
+# %%
