@@ -27,7 +27,7 @@ PATIENCE=5
 # ----------------------------------
 # augmentation params
 # ----------------------------------
-NOISE_STRENGTH=0.02
+NOISE_STRENGTH=0.1
 SCALE_MIN=0.75
 SCALE_MAX=1.25
 TIME_CROP_MIN=0.6
