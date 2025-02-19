@@ -1,4 +1,3 @@
-import os
 import h5py
 import numpy as np
 import torch
@@ -194,7 +193,7 @@ def contrastive_collate_fn(batch):
 
 # checking composition of batch and normalisation processes
 def main():
-    h5_file_path = r"C:\Users\aman\Desktop\MPhys Data\Data\train.h5"
+    h5_file_path = r"/Masters-Project/charles/data/beam_0_selected_data.h5"
 
     # augmentation chances
     augment_params = {

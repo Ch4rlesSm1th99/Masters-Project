@@ -1,14 +1,16 @@
+#%%
 import numpy as np
 
 def augment_power(
     data,
     negative_value=-9999,
-    noise_strength=0.01,
+    noise_strength=0.2,
     scale_range=(0.9, 1.1),
     max_shift=2,
     max_removed_points=25,
     swap_prob=0.1,
     mask_prob=0.1,
+    saturation_factor=1.5,
     augment_probabilities=None,
     verbose=False
 ):
@@ -29,6 +31,7 @@ def augment_power(
             'swap_adjacent_range_gates', 'mask_data'.
             Values are floats between 0 and 1.
         verbose (bool): If True, prints messages during augmentation.
+        saturation_factor (float): Factor for adjusting saturation.
 
     Returns:
         np.ndarray: The augmented data array.
@@ -44,13 +47,17 @@ def augment_power(
             'translate_y': 0.5,
             'translate_x': 0.5,
             'swap_adjacent_range_gates': 0.5,
-            'mask_data': 0.5
+            'mask_data': 0.5,
+            'adjust_saturation': 0.5
         }
 
     def add_noise(data):
         valid_mask = data != negative_value
-        noise = np.random.normal(0, noise_strength, size=data.shape)
-        data[valid_mask] += noise[valid_mask]
+        if np.any(valid_mask):  # Check if there are valid data points
+            data_range = data[valid_mask].max() - data[valid_mask].min()
+            dynamic_noise_strength = noise_strength * data_range
+            noise = np.random.normal(0, dynamic_noise_strength, size=data.shape)
+            data[valid_mask] += noise[valid_mask]
         return data
 
     def scale_data_func(data):
@@ -133,6 +140,15 @@ def augment_power(
         if verbose:
             print(f"Applied mask_data with mask_prob {mask_prob}")
         return data
+    
+    
+    def adjust_saturation(data):
+        valid_mask = data != negative_value
+        mean_value = np.mean(data[valid_mask])
+        data[valid_mask] = mean_value + saturation_factor * (data[valid_mask] - mean_value)
+        if verbose:
+            print(f"Applied adjust_saturation with saturation_factor {saturation_factor}")
+        return data
 
     # map augs to funct
     augmentations = {
@@ -141,7 +157,8 @@ def augment_power(
         'translate_y': translate_y,
         'translate_x': translate_x,
         'swap_adjacent_range_gates': swap_adjacent_range_gates,
-        'mask_data': mask_data
+        'mask_data': mask_data,
+        'adjust_saturation': adjust_saturation
     }
 
     # apply aug
@@ -165,7 +182,7 @@ import matplotlib.pyplot as plt
 import random
 
 
-h5_file_path = r"C:\Users\aman\Desktop\MPhys Data\Data\beam_0_selected_data.h5"
+h5_file_path = r"C:\Users\aman\Desktop\MPhys Data\Data\all_beams_selected_data.h5"
 
 # negative padding value used in your data
 negative_value = -9999
@@ -173,20 +190,22 @@ negative_value = -9999
 
 def main():
     with h5py.File(h5_file_path, 'r') as hf:
-        segments = list(hf.keys())
-        segments.sort(key=lambda x: int(x.split('_')[1]))
+        beams = list(hf.keys())
+        #segments.sort(key=lambda x: int(x.split('_')[1]))
 
         num_segments_to_process = 3
-        selected_segments = random.sample(segments, min(num_segments_to_process, len(segments)))
-        print(f"Selected segments: {selected_segments}")
+        selected_beams = random.sample(beams, min(num_segments_to_process, len(beams)))
+        print(f"Selected beams: {selected_beams}")
 
         plot_data_list = []
 
-        for segment_name in selected_segments:
-            grp = hf[segment_name]
-            data = grp['data'][:]  # shape: (time_steps, range_gates, features)
-            # extract power at index 0, 1 vel, 2 width
-            power_data = data[:, :, 0]
+        for beam_name in selected_beams:
+            beam_grp = hf[beam_name]
+            segment_names = list(beam_grp.keys())  
+            segment_name = random.choice(segment_names)
+            segment_grp = beam_grp[segment_name]
+            data = segment_grp["data"][:]  # shape: (time_steps, range_gates, features)
+            power_data = data[:, :, 0] 
 
             # augmentation parameters
             augment_params = {
@@ -197,13 +216,15 @@ def main():
                 'max_removed_points': 25,
                 'swap_prob': 0.1,
                 'mask_prob': 0.1,
+                'saturation_factor': 0.5,
                 'augment_probabilities': {
-                    'add_noise': 1.0,  # 1.0 = always apply, 0 = no
-                    'scale_data': 1.0,  # 1.0 = always apply, 0 = no
-                    'translate_y': 0.5,  # 50% chance
-                    'translate_x': 0.5,  # 50% chance
-                    'swap_adjacent_range_gates': 0.5,  # 50% chance
-                    'mask_data': 0.5  # 50% chance
+                    'add_noise': 0,  # 1.0 = always apply, 0 = no
+                    'scale_data': 0,  # 1.0 = always apply, 0 = no
+                    'translate_y': 0,  # 50% chance
+                    'translate_x': 0,  # 50% chance
+                    'swap_adjacent_range_gates': 0,  # 50% chance
+                    'mask_data': 0, 
+                    'adjust_saturation': 1 # 50% chance
                 },
                 'verbose': True  # print messages during augmentation for adjusting
             }
@@ -266,4 +287,4 @@ def plot_augmented_data_grid(plot_data_list, negative_value=-9999):
 
 
 if __name__ == "__main__":
-    main()
+    main()#only runs main function if this script is run directly, not if it is imported as a module
