@@ -17,15 +17,22 @@ def parse_args():
     parser.add_argument('--model_type', type=str, default='SimCLR', choices=['SimCLR', 'BYOL'],
                         help='Which model to train: SimCLR or BYOL.')
 
+    # data paths
     parser.add_argument('--train_h5_file_path', type=str,
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\train.h5",
                         help='Path to training H5 file.')
     parser.add_argument('--val_h5_file_path', type=str,
                         default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\val.h5",
                         help='Path to validation H5 file.')
-    parser.add_argument('--checkpoint_dir', type=str,
-                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR",
-                        help='Directory to save checkpoints and logs.')
+
+    # model save path and logging path
+    parser.add_argument('--weights_dir', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details",
+                        help="Base directory to save model checkpoints.")
+    parser.add_argument('--log_dir', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details",
+                        help="Base directory to save logs.")
+
 
     # training params
     parser.add_argument('--batch_size', type=int, default=16, help='Batch size for training and validation.')
@@ -77,31 +84,27 @@ def parse_args():
 def main(args):
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # init directory
-    from datetime import datetime
-    experiment_name = f"{args.model_type}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-    experiment_dir = os.path.join(r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\experiments", experiment_name)
+    # use seperate logs in model dets for logging weights and training info
+    model_dir = os.path.join(args.weights_dir, args.model_type)
+    weights_dir = os.path.join(model_dir, "weights")
+    logs_dir = os.path.join(args.log_dir, args.model_type, "logs")
 
-    log_dir = os.path.join(experiment_dir, "logs")
-    ckpt_dir = os.path.join(experiment_dir, "checkpoints")
-    os.makedirs(log_dir, exist_ok=True)
-    os.makedirs(ckpt_dir, exist_ok=True)
+    os.makedirs(weights_dir, exist_ok=True)
+    os.makedirs(logs_dir, exist_ok=True)
 
-    # savve to config.txt
-    config_path = os.path.join(experiment_dir, "config.txt")
-    with open(config_path, "w") as f:
-        for arg, value in vars(args).items():
-            f.write(f"{arg}: {value}\n")
+    checkpoint_file = os.path.join(weights_dir, "model.pth")
+    log_file = os.path.join(logs_dir, "training.log")
 
-    # init log
-    log_file_path = os.path.join(log_dir, "training.log")
-    logging.basicConfig(
-        filename=log_file_path,
-        filemode='w',
-        format='%(asctime)s - %(message)s',
-        level=logging.INFO
-    )
+    # note: overites each time model is trained, currently that how its built
+    logging.basicConfig(filename=log_file,
+                        filemode='w',
+                        format='%(asctime)s - %(message)s',
+                        level=logging.INFO)
     logging.info("epoch,train_loss,val_loss,val_top1,val_top5,val_top10")
+
+    print(f"Training {args.model_type} model...")
+    print(f"Saving model to: {checkpoint_file}")
+    print(f"Logging training to: {log_file}")
 
     best_val_loss = float('inf')
     epochs_without_improvement = 0
@@ -114,7 +117,7 @@ def main(args):
         'swap_prob': args.swap_intensity,
         'mask_prob': args.mask_intensity,
 
-        # Time Cropping Specific
+        # time cropping specific
         'time_crop_frac_range': (args.time_crop_min, args.time_crop_max),
         'min_valid_ratio': args.min_valid_ratio,
 
@@ -198,12 +201,12 @@ def main(args):
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             epochs_without_improvement = 0
-            save_checkpoint(model, optimizer, epoch, ckpt_dir, filename="best_model.pth")
+            save_checkpoint(model, optimizer, epoch, weights_dir, filename="best_model.pth")
         else:
             epochs_without_improvement += 1
 
         if epoch % 10 == 0 or epoch == args.num_epochs:
-            save_checkpoint(model, optimizer, epoch, ckpt_dir, filename=f"epoch_{epoch}.pth")
+            save_checkpoint(model, optimizer, epoch, weights_dir, filename=f"epoch_{epoch}.pth")
 
         # early stopping
         if epochs_without_improvement >= args.patience:
@@ -259,7 +262,7 @@ def train_one_epoch(model, data_loader, optimizer, device, epoch, args):
             loss.backward()
             optimizer.step()
 
-            # for BYOL, target network updated with moment vals each epoch
+            # for BYOL, target network updated with moment values each epoch
             if isinstance(model, BYOL):
                 model.update_target_network()
 
@@ -335,12 +338,12 @@ def validate(model, data_loader, device, epoch, args):
     return average_loss, average_acc_top1, average_acc_top5, average_acc_top10
 
 
-def save_checkpoint(model, optimizer, epoch, checkpoint_dir, filename=None):
-    if not os.path.exists(checkpoint_dir):
-        os.makedirs(checkpoint_dir)
+def save_checkpoint(model, optimizer, epoch, weights_dir, filename=None):
+    if not os.path.exists(weights_dir):
+        os.makedirs(weights_dir)
     if filename is None:
         filename = f"simclr_epoch_{epoch}.pth"
-    checkpoint_path = os.path.join(checkpoint_dir, filename)
+    checkpoint_path = os.path.join(weights_dir, filename)
     torch.save({
         'epoch': epoch,
         'model_state_dict': model.state_dict(),
