@@ -162,7 +162,7 @@ def main(args):
         drop_last=True
     )
 
-    base_encoder = BaseEncoder(input_channels=1)
+    base_encoder = BaseEncoder(input_channels=1).to(device)
 
     if args.model_type.upper() == "SIMCLR":
         model = SimCLR(
