@@ -9,8 +9,8 @@ from datetime import datetime
 from torch.utils.data import DataLoader
 
 
-from models import BaseEncoder
-from data_loader import SuperDARNDataset, contrastive_collate_fn
+from charles.self_supervised_approach.models import BaseEncoder
+from charles.self_supervised_approach.data_loader import SuperDARNDataset, contrastive_collate_fn
 
 
 def parse_time(time_str):
@@ -79,7 +79,7 @@ def load_model(path, device="cpu"):
     return base_encoder
 
 def get_embeddings(model, data_loader, dataset_type="test", device="cpu"):
-    save_dir = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\embeddings"
+    save_dir = r"/charles/data/embeddings"
     if os.path.exists(save_dir) and not os.path.isdir(save_dir):
         raise ValueError(f"⚠️ Error: {save_dir} exists but is not a directory.")
     os.makedirs(save_dir, exist_ok=True)
@@ -246,8 +246,8 @@ def visualize_single_anchor(
 
 
 
-test_data_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\test.h5"
-model_weights_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR_Weights\best_model.pth"
+test_data_path = r"/charles/data/test.h5"
+model_weights_path = r"/charles/model_details/SimCLR_Weights/best_model.pth"
 
 def main():
     device = "cpu"
