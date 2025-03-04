@@ -246,8 +246,8 @@ def visualize_single_anchor(
 
 
 
-test_data_path = r"/charles/data/test.h5"
-model_weights_path = r"/charles/model_details/SimCLR_Weights/best_model.pth"
+test_data_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\test.h5"
+model_weights_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR_Weights\best_model.pth"
 
 def main():
     device = "cpu"

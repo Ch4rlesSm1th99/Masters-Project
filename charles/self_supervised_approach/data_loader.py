@@ -4,7 +4,7 @@ import torch
 from torch.utils.data import Dataset, DataLoader
 import matplotlib.pyplot as plt
 
-from .augmentation_strategies import augment_power
+from charles.self_supervised_approach.augmentation_strategies import augment_power
 
 
 class SuperDARNDataset(Dataset):

@@ -6,8 +6,8 @@ from tqdm import tqdm
 import logging
 import argparse
 
-from data_loader import SuperDARNDataset, contrastive_collate_fn
-from models import BaseEncoder, SimCLR, BYOL, SimCLR_topk_accuracy
+from charles.self_supervised_approach.data_loader import SuperDARNDataset, contrastive_collate_fn
+from charles.self_supervised_approach.models import BaseEncoder, SimCLR, BYOL, SimCLR_topk_accuracy
 
 
 def parse_args():

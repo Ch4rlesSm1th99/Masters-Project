@@ -60,7 +60,7 @@ def compute_uniformity_metric(embeddings, sample_size=1000):
     """
     Computes the uniformity metric defined as:
 
-      U = log ( (1 / (N*(N-1))) * sum_{i != j} exp(-2*abs[ f(x_i)-f(x_j) ]^2))
+      U = log ( (1 / (N*(N-1))) * sum{i != j} exp(-2*abs[ f(x_i)-f(x_j) ]^2))
 
     where embeddings are first L2 normalized so that they lie on the unit hypersphere.
     To reduce computation, a random subsample of size sample_size is used if the number of embeddings is large.
@@ -113,9 +113,8 @@ def main():
     print(f"Extracted {embeddings.shape[0]} embeddings with shape {embeddings.shape}")
 
     uniformity_score, samples_used = compute_uniformity_metric(embeddings, sample_size=10000)
-    print(samples_used)
     print(f"Uniformity metric: {uniformity_score:.4f}")
-
+    print(f"Uniformity computed using {samples_used} samples")
 
 if __name__ == "__main__":
     main()
