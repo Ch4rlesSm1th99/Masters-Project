@@ -234,13 +234,13 @@ def main():
     print(f"Silhouette Score (for non-noise points): {sil_score:.4f}")
 
     # visualize clusters with PCA
-    visualize_clusters(embeddings_norm, cluster_labels, plot_noise=False)
+    visualize_clusters(embeddings_norm, cluster_labels, plot_noise=True)
 
     # visualize original samples from a particular cluster (normally cluster 1 for auroral events)
-    cluster_to_inspect = 1  # Change this to any cluster label you wish to inspect
+    cluster_to_inspect = 1
     visualize_cluster_samples(dataset, cluster_labels, cluster=cluster_to_inspect, num_samples=5)
 
-    print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=1)
+    print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=cluster_to_inspect)
 
 
 if __name__ == "__main__":
