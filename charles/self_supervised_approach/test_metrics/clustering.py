@@ -8,14 +8,54 @@ from sklearn.metrics import silhouette_score
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import argparse
 
 from charles.self_supervised_approach.models import BaseEncoder
 from charles.self_supervised_approach.data_loader import SuperDARNDataset, contrastive_collate_fn
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description="Run clustering pipeline on train, val, or test dataset.")
+
+    # choose dataset
+    parser.add_argument('--run_set', type=str, default='train', choices=['train', 'val', 'test'],
+                        help="Which dataset to run: train, val, or test.")
+
+    # set data paths
+    parser.add_argument('--train_h5_file_path', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\train.h5",
+                        help='Path to training H5 file.')
+    parser.add_argument('--val_h5_file_path', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\val.h5",
+                        help='Path to validation H5 file.')
+    parser.add_argument('--test_h5_file_path', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\test.h5",
+                        help='Path to test H5 file.')
+
+    # clustering parameters for DBSCAN
+    parser.add_argument('--min_samples', type=int, default=-1,
+                        help="Manual min_samples for DBSCAN. If -1, dynamic scaling is used.")
+    parser.add_argument('--baseline_size', type=int, default=9000,
+                        help="Baseline dataset size for dynamic min_samples scaling.")
+    parser.add_argument('--baseline_min_samples', type=int, default=30,
+                        help="Baseline min_samples for dynamic scaling.")
+    parser.add_argument('--adjust_factor', type=float, default=0.9,
+                        help="Adjustment factor for dynamic min_samples scaling.")
+
+    # plotting and dislplay options
+    parser.add_argument('--plot_noise', action='store_true', default=False,
+                        help="If set, noise points will be plotted in the PCA visualization.")
+    parser.add_argument('--cluster_to_inspect', type=int, default=1,
+                        help="Cluster label to inspect for random sample visualization.")
+    parser.add_argument('--num_samples', type=int, default=5,
+                        help="Number of random samples to plot from the specified cluster.")
+
+    return parser.parse_args()
+
+
 def load_model(path, device="cpu"):
     base_encoder = BaseEncoder(input_channels=1)
-    checkpoint = torch.load(path, map_location=device,weights_only=True)
+    checkpoint = torch.load(path, map_location=device, weights_only=True)
     encoder_state_dict = {
         k.replace("encoder.", ""): v
         for k, v in checkpoint["model_state_dict"].items()
@@ -59,26 +99,15 @@ def get_embeddings(model, data_loader, dataset_type="test", device="cpu"):
 
 def visualize_clusters(embeddings_norm, cluster_labels, plot_noise=True):
     """
-    Visualises clusters using PCA to reduce dimensionality to 2D. PCA takes the two most dominant
-    features with principle component 2 being orthogonal to principle component 1 and plots them
-    to visualise clusters.
-
-    Parameters:
-      embeddings_norm (np.array): L2 normalized embeddings
-      cluster_labels (np.array): Cluster labels assigned by DBSCAN
-      plot_noise (bool): Whether to plot noise points (label == -1)
+    Visualises clusters using PCA to reduce dimensionality to 2D.
     """
-    # reduce dimensionality with PCA to 2 components
     pca = PCA(n_components=2)
     embeddings_2d = pca.fit_transform(embeddings_norm)
 
     plt.figure(figsize=(10, 8))
-
-    # separate non-noise points and noise points
     noise_mask = cluster_labels == -1
     non_noise_mask = ~noise_mask
 
-    # plot non-noise points
     scatter = plt.scatter(
         embeddings_2d[non_noise_mask, 0],
         embeddings_2d[non_noise_mask, 1],
@@ -89,7 +118,6 @@ def visualize_clusters(embeddings_norm, cluster_labels, plot_noise=True):
         label="Clusters"
     )
 
-    # plot noise points if bool is True
     if plot_noise and np.any(noise_mask):
         plt.scatter(
             embeddings_2d[noise_mask, 0],
@@ -111,23 +139,12 @@ def visualize_clusters(embeddings_norm, cluster_labels, plot_noise=True):
 def visualize_cluster_samples(dataset, cluster_labels, cluster, num_samples=5, negative_value=-9999):
     """
     Visualises a few original samples from the dataset that are assigned to a specific cluster.
-    For inspection of trend found that the cluster for auroral events is most typically cluster
-    1 but can change if varying epsilon and min number of samples.
-
-    Parameters:
-      dataset: dataset object (SuperDARNDataset object).
-      cluster_labels (array-like): Array of cluster labels (from DBSCAN).
-      cluster (int): The cluster label to visualize (0, 1, ...., num_clusters).
-      num_samples (int): Number of samples to display from the cluster.
-      negative_value (float): The value used in the dataset to indicate missing data.
     """
-    # collect indicies from cluster
     indices = [i for i, label in enumerate(cluster_labels) if label == cluster]
     if len(indices) == 0:
         print(f"No samples found for cluster {cluster}")
         return
 
-    # randomly select a few for visual inspection
     selected_indices = np.random.choice(indices, size=min(num_samples, len(indices)), replace=False)
 
     for idx in selected_indices:
@@ -148,15 +165,8 @@ def visualize_cluster_samples(dataset, cluster_labels, cluster, num_samples=5, n
 
 def print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=1):
     """
-    Prints details about the specified cluster ie metadata and size of cluster
-
-    Parameters:
-      dataset: dataset object (SuperDARNDataset object).
-      cluster_labels (array-like): Array of cluster labels (from DBSCAN).
-      embeddings_norm (np.array): L2 normalized embeddings
-      cluster (int): The cluster label to visualize (0, 1, ...., num_clusters).
+    Prints details about the specified cluster (metadata and size).
     """
-    # collect indicies
     indices = [i for i, label in enumerate(cluster_labels) if label == cluster]
     print(f"Cluster {cluster} has {len(indices)} samples.")
 
@@ -164,7 +174,6 @@ def print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=1):
         print("No samples in this cluster.")
         return
 
-    # compute the stats for the cluster
     cluster_embeddings = embeddings_norm[indices]
     mean_emb = np.mean(cluster_embeddings, axis=0)
     std_emb = np.std(cluster_embeddings, axis=0)
@@ -172,7 +181,6 @@ def print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=1):
     print(f"  Mean (first 10 components): {mean_emb[:10]}")
     print(f"  Std  (first 10 components): {std_emb[:10]}")
 
-    # print meta data segment names and timestamps
     print("Sample segment details from this cluster:")
     with h5py.File(dataset.h5_file_path, 'r') as hf:
         sample_names = [dataset.segments[i] for i in indices[:10]]
@@ -184,12 +192,24 @@ def print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=1):
 
 
 def main():
+    args = parse_args()
     device = "cpu"
-    test_data_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\test.h5"
+
+    # Choose the correct data path based on the run_set argument
+    run_set = args.run_set.lower()
+    if run_set == "train":
+        data_path = args.train_h5_file_path
+    elif run_set == "val":
+        data_path = args.val_h5_file_path
+    elif run_set == "test":
+        data_path = args.test_h5_file_path
+    else:
+        raise ValueError("Invalid run_set specified.")
+
     model_weights_path = r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\model_details\SimCLR_Weights\best_model.pth"
 
     dataset = SuperDARNDataset(
-        h5_file_path=test_data_path,
+        h5_file_path=data_path,
         negative_value=-9999,
         apply_augmentations=False
     )
@@ -203,23 +223,29 @@ def main():
     )
 
     model = load_model(model_weights_path, device)
-    embeddings = get_embeddings(model, data_loader, dataset_type="test", device=device)
+    embeddings = get_embeddings(model, data_loader, dataset_type=run_set, device=device)
     print(f"Extracted {embeddings.shape[0]} embeddings with shape {embeddings.shape}")
 
-    # L2 Normalization
+    # L2 normalsiation
     embeddings_tensor = torch.tensor(embeddings, dtype=torch.float32)
     embeddings_norm = F.normalize(embeddings_tensor, p=2, dim=1).numpy()
+
+    # compute the min_sampels for a cluster based on the size of the dataset (about 30/9000 * size)
+    if args.min_samples > 0:
+        dynamic_min_samples = args.min_samples
+    else:
+        dynamic_min_samples = int(args.baseline_min_samples * (len(dataset) / args.baseline_size) * args.adjust_factor)
+    print(f"Using min_samples = {dynamic_min_samples} for DBSCAN (dynamic scaling)")
 
     # -------------------------
     # DBSCAN Clustering
     # -------------------------
     eps = 0.2
-    min_samples = 36
-    dbscan = DBSCAN(eps=eps, min_samples=min_samples, metric='euclidean')
+    dbscan = DBSCAN(eps=eps, min_samples=dynamic_min_samples, metric='euclidean')
     cluster_labels = dbscan.fit_predict(embeddings_norm)
 
     # -------------------------
-    # Clustering Evaluation: Silhouette Score
+    # Silhouette Score
     # -------------------------
     mask = cluster_labels != -1
     unique_clusters = np.unique(cluster_labels[mask])
@@ -233,14 +259,13 @@ def main():
     print(f"DBSCAN produced {num_clusters} clusters (ignoring noise) with {num_noise} noise points.")
     print(f"Silhouette Score (for non-noise points): {sil_score:.4f}")
 
-    # visualize clusters with PCA
-    visualize_clusters(embeddings_norm, cluster_labels, plot_noise=True)
+    # visualise clusters with PCA
+    visualize_clusters(embeddings_norm, cluster_labels, plot_noise=args.plot_noise)
 
-    # visualize original samples from a particular cluster (normally cluster 1 for auroral events)
-    cluster_to_inspect = 1
-    visualize_cluster_samples(dataset, cluster_labels, cluster=cluster_to_inspect, num_samples=5)
+    # inspect samples in the clusters
+    visualize_cluster_samples(dataset, cluster_labels, cluster=args.cluster_to_inspect, num_samples=args.num_samples)
 
-    print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=cluster_to_inspect)
+    print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=args.cluster_to_inspect)
 
 
 if __name__ == "__main__":
