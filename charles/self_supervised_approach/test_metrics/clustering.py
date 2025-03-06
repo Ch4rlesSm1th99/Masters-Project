@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
 import argparse
+import csv
 
 from charles.self_supervised_approach.models import BaseEncoder
 from charles.self_supervised_approach.data_loader import SuperDARNDataset, contrastive_collate_fn
@@ -49,6 +50,13 @@ def parse_args():
                         help="Cluster label to inspect for random sample visualization.")
     parser.add_argument('--num_samples', type=int, default=5,
                         help="Number of random samples to plot from the specified cluster.")
+
+    # fine-tuning dataset saving option -- save pseudo labels for training classifier head
+    parser.add_argument('--save_labels', action='store_true', default=False,
+                        help="If set, save a CSV file with binary labels for fine-tuning.")
+    parser.add_argument('--fine_tuning_dir', type=str,
+                        default=r"C:\Users\charl\PycharmProjects\Masters_Project\Masters-Project\charles\data\fine_tuning_labels",
+                        help="Directory to save the fine-tuning labeled dataset.")
 
     return parser.parse_args()
 
@@ -195,7 +203,7 @@ def main():
     args = parse_args()
     device = "cpu"
 
-    # Choose the correct data path based on the run_set argument
+    # choose the correct data path based on the run_set argument
     run_set = args.run_set.lower()
     if run_set == "train":
         data_path = args.train_h5_file_path
@@ -266,6 +274,19 @@ def main():
     visualize_cluster_samples(dataset, cluster_labels, cluster=args.cluster_to_inspect, num_samples=args.num_samples)
 
     print_cluster_details(dataset, cluster_labels, embeddings_norm, cluster=args.cluster_to_inspect)
+
+    if args.save_labels:
+        ft_dir = args.fine_tuning_dir
+        os.makedirs(ft_dir, exist_ok=True)
+        output_path = os.path.join(ft_dir, f"labels_{run_set}.csv")
+        with open(output_path, 'w', newline='') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(["index", "segment_name", "label"])
+            for i, seg_name in enumerate(dataset.segments):
+                # label 1 if the sample's cluster matches the desired cluster, 0 otherwise.
+                new_label = 1 if cluster_labels[i] == args.cluster_to_inspect else 0
+                writer.writerow([i, seg_name, new_label])
+        print(f"Saved fine-tuning labels to {output_path}")
 
 
 if __name__ == "__main__":

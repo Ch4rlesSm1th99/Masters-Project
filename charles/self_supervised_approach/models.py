@@ -325,3 +325,27 @@ class BYOL(nn.Module):
         loss_2 = loss_fn(p2, t1)
         loss = (loss_1 + loss_2).mean()
         return loss
+
+# -----------------------
+# For fine tuning network for event classification
+# ------------------------
+class FrozenEncoderBinaryClassifier(nn.Module):
+    def __init__(self, encoder, embedding_dim=512, num_classes=1):
+        super(FrozenEncoderBinaryClassifier, self).__init__()
+        self.encoder = encoder
+        # freeze encoder parameters (SIMCLR part)
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+
+        # classification head: maps embedding_dim to num_classes (binary classification 0 or 1 success)
+        self.classifier = nn.Linear(embedding_dim, num_classes)
+
+    def forward(self, x):
+        # pass input through encoder with frozen wights
+        with torch.no_grad():
+            emb = self.encoder(x)
+        # L2 normalize embeddings
+        emb = F.normalize(emb, p=2, dim=1)
+
+        logits = self.classifier(emb)
+        return logits
