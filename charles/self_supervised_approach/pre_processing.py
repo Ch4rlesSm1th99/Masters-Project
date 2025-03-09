@@ -213,7 +213,7 @@ def load_and_preprocess_data_all_beams(
                 print(f"No valid segments created or no data for beam {beam_number}.")
                 continue
 
-            # 2) store each segment into a group
+            # store each segment into a group
             beam_group = hf_full.create_group(f'beam_{beam_number}')
 
             for idx_seg, (seg_data, seg_start_time, stid_list) in enumerate(beam_segments):
