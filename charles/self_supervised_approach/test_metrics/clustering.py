@@ -19,7 +19,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Run clustering pipeline on train, val, or test dataset.")
 
     # choose dataset
-    parser.add_argument('--run_set', type=str, default='train', choices=['train', 'val', 'test'],
+    parser.add_argument('--run_set', type=str, default='test', choices=['train', 'val', 'test'],
                         help="Which dataset to run: train, val, or test.")
 
     # set data paths
