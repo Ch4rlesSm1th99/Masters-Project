@@ -201,7 +201,7 @@ def load_and_preprocess_data_all_beams(
     # create the output HDF5 or overwrite
     with h5py.File(output_h5_file, 'w') as hf_full:
         for beam_number in beams_to_process:
-            # 1) parse data for this specific beam
+            # parse data for this specific beam
             beam_segments = load_and_preprocess_beam(
                 data_directory,
                 beam_number,
